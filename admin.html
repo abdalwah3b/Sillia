@@ -249,6 +249,12 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;bor
               <option value="bakhoor">بخور</option>
             </select>
           </label>
+          <label>الفئة المستهدفة
+            <select name="gender">
+              <option value="men">رجالي</option>
+              <option value="women">نسائي</option>
+            </select>
+          </label>
           <label>لون الزجاجة في المتجر<input name="tone" type="color" value="#b08a4f"></label>
           <label>متوفر في المتجر
             <select name="inStock">
@@ -444,9 +450,21 @@ try {
 
 const STATUSES = { new:"جديد", preparing:"قيد التجهيز", delivered:"تم التوصيل", cancelled:"ملغي" };
 const CATS = { niche:"نيش", designer:"ديزاينر", alt:"بدائل", bakhoor:"بخور" };
+const GENDERS = { men:"رجالي", women:"نسائي" };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const getPerfumeImage = p => String(p?.image || p?.imageUrl || "").trim();
+const formatGenderLabel = val => {
+  const raw = String(val || "").trim().toLowerCase();
+  if(["women", "female", "woman", "نسائي", "نساء", "نسائية"].includes(raw)) return "نسائي";
+  if(["men", "male", "man", "رجالي", "رجال", "رجالية"].includes(raw)) return "رجالي";
+  return "رجالي";
+};
+const normalizeGenderValue = val => {
+  const raw = String(val || "").trim().toLowerCase();
+  if(["women", "female", "woman", "نسائي", "نساء", "نسائية"].includes(raw)) return "women";
+  return "men";
+};
 
 const PREFS_KEY = "sillia_admin_prefs_v1";
 let prefs = (() => {
@@ -878,7 +896,8 @@ function renderPerfumes(){
     if(stock === "true" && !p.inStock) return false;
     if(stock === "false" && p.inStock) return false;
     if(q){
-      const hay = [p.name, p.house, p.size, p.notes, p.topNote, p.heartNote, p.baseNote, CATS[p.category]].join(" ").toLowerCase();
+      const gLabel = formatGenderLabel(p.gender);
+      const hay = [p.name, p.house, p.size, gLabel, p.notes, p.topNote, p.heartNote, p.baseNote, CATS[p.category]].join(" ").toLowerCase();
       if(!hay.includes(q)) return false;
     }
     return true;
@@ -893,6 +912,7 @@ function renderPerfumes(){
       ? `<img class="perfume-thumb" src="${esc(imgUrl)}" alt="${esc(p.name)}" onerror="this.style.display='none'">`
       : "";
     const notesDisplay = p.notes || [p.topNote, p.heartNote, p.baseNote].filter(Boolean).join(" · ");
+    const genderLabel = formatGenderLabel(p.gender);
 
     return `<div class="card row">
       <div style="display:flex;align-items:center;gap:12px">
@@ -900,7 +920,7 @@ function renderPerfumes(){
         <div>
           <span class="color-dot" style="background:${esc(tone)}"></span>
           <b>${esc(p.name)}</b>
-          <span class="muted">· ${esc(p.house)} · ${esc(p.size)}</span>
+          <span class="muted">· ${esc(p.house)} · ${esc(p.size)} · ${esc(genderLabel)}</span>
           <div class="muted">${esc(CATS[p.category] || "")} · ${esc(notesDisplay)}</div>
         </div>
       </div>
@@ -1017,6 +1037,7 @@ $("perfumeForm").addEventListener("submit", async e => {
     size: f.get("size").trim(),
     price: Number(f.get("price")),
     category: f.get("category"),
+    gender: normalizeGenderValue(f.get("gender")),
     tone: f.get("tone") || "#b08a4f",
     inStock: f.get("inStock") === "true",
     topNote,
@@ -1048,6 +1069,7 @@ $("perfumeForm").addEventListener("submit", async e => {
 function resetForm(){
   editingId = null;
   $("perfumeForm").reset();
+  $("perfumeForm").gender.value = "men";
   $("perfumeForm").tone.value = "#b08a4f";
   $("photoInput").value = "";
   setPhotoPreview("", "");
@@ -1068,6 +1090,7 @@ $("perfumeList").addEventListener("click", async e => {
     $("formTitle").textContent = "تعديل العطر: " + (p.name || "");
     const form = $("perfumeForm");
     ["name","house","size","price","category"].forEach(k => form[k].value = p[k] ?? "");
+    form.gender.value = normalizeGenderValue(p.gender);
     const parts = String(p.notes || "").split("·").map(s => s.trim());
     form.topNote.value = p.topNote ?? parts[0] ?? "";
     form.heartNote.value = p.heartNote ?? parts[1] ?? "";
