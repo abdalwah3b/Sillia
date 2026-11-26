@@ -188,6 +188,9 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:32px 22px;bor
 .ln{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:4px}
 .ln b{font-family:"Bodoni Moda",Didot,serif;font-size:18px;font-weight:500}
 .ln .side{font-weight:600;color:var(--deep);white-space:nowrap;font-size:14px}
+.meta-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
+.meta-row .price-txt{font-weight:600;color:var(--deep);white-space:nowrap}
+.meta-row .gender-tag{color:var(--muted);background:var(--sand);border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:12px;white-space:nowrap}
 .card small{color:var(--muted);font-size:12px;line-height:1.6}
 </style>
 </head>
@@ -355,6 +358,14 @@ const categories = {
   bakhoor:{label:"بخور", title:"البخور", desc:"مواد عطرية طبيعية تُحرق على الفحم لتعطير المكان والملابس، بدلاً من الرش على الجلد. تُستعمل في البيوت والمجالس، وتترك أثراً دافئاً يبقى لساعات."}
 };
 
+function formatGender(val){
+  const raw = String(val || "").trim().toLowerCase();
+  if(["women", "female", "woman", "نسائي", "نساء", "نسائية"].includes(raw)) return "نسائي";
+  if(["men", "male", "man", "رجالي", "رجال", "رجالية"].includes(raw)) return "رجالي";
+  if(["unisex", "both", "للجنسين", "مشترك"].includes(raw)) return "للجنسين";
+  return "";
+}
+
 let items = [];
 let activeCat = "niche";
 const $ = id => document.getElementById(id);
@@ -400,6 +411,12 @@ function renderTabs(){
     `<button class="${k===activeCat?'on':''}" data-c="${k}">${esc(categories[k].label)}</button>`).join("");
 }
 
+function cardMetaHtml(item){
+  const g = formatGender(item.gender);
+  const tagHtml = g ? `<span class="gender-tag">${esc(g)}</span>` : "";
+  return `<div class="meta-row"><span class="price-txt">${esc(item.price)} د.ل</span>${tagHtml}</div>`;
+}
+
 function renderCat(){
   const c = categories[activeCat];
   $("catinfo").innerHTML = `<b style="display:block;margin-bottom:4px;color:var(--ink)">${esc(c.title)}</b>${esc(c.desc)}`;
@@ -408,7 +425,8 @@ function renderCat(){
     const tone = i.tone || "#b08a4f";
     return `<article class="card">
       <div class="sq" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${renderArtwork(i,k)}</div>
-      <div class="ln"><b>${esc(i.name)}</b><span class="side">${esc(i.price)} د.ل</span></div>
+      <div class="ln"><b>${esc(i.name)}</b></div>
+      ${cardMetaHtml(i)}
       <small>${esc(i.notes)}</small>
       <button class="add addbtn" data-add="${esc(i.name)}">أضف للسلة</button>
     </article>`;
@@ -422,7 +440,8 @@ function renderFeatured(){
     const tone = i.tone || "#b08a4f";
     return `<article class="card">
       <div class="sq" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${renderArtwork(i,"f"+k)}</div>
-      <div class="ln"><b>${esc(i.name)}</b><span class="side">${esc(i.price)} د.ل</span></div>
+      <div class="ln"><b>${esc(i.name)}</b></div>
+      ${cardMetaHtml(i)}
       <small>${esc(i.notes)}</small>
       <button class="add addbtn" data-add="${esc(i.name)}">أضف للسلة</button>
     </article>`;
@@ -455,6 +474,7 @@ onSnapshot(query(collection(db, "perfumes")), snap => {
     return {
       id: d.id,
       cat: data.category || data.cat || "niche",
+      gender: data.gender || data.audience || data.type || data.for || "",
       house: data.house || "Sillia",
       name: data.name || "",
       size: data.size || "100 مل",
@@ -763,11 +783,13 @@ function openProduct(name){
   const heartVal = i.heartNote || n[1] || "—";
   const baseVal = i.baseNote || n[2] || "—";
   const tone = i.tone || "#b08a4f";
+  const g = formatGender(i.gender);
+  const genderPart = g ? ` · ${g}` : "";
   $("prodBody").innerHTML = `
     <div class="pd-art" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${renderArtwork(i,"p")}</div>
     <div class="pd-house">${esc(i.house)}</div>
     <h2 class="pd-name">${esc(i.name)}</h2>
-    <div class="pd-meta">${esc(i.size)} · ${esc(i.price)} د.ل</div>
+    <div class="pd-meta">${esc(i.size)} · ${esc(i.price)} د.ل${esc(genderPart)}</div>
     <div class="pd-ladder">
       <div><span>أعلى</span><b>${esc(topVal)}</b></div>
       <div><span>قلب</span><b>${esc(heartVal)}</b></div>
