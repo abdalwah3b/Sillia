@@ -70,6 +70,10 @@ button.danger{color:#9b2c2c;border-color:#e9c4c4}
 .pill.st-cancelled{background:#f7e6e6;color:#8c2323;border-color:#e5bcbc}
 .color-dot{display:inline-block;width:13px;height:13px;border-radius:50%;vertical-align:middle;border:1px solid rgba(0,0,0,.18);margin-left:7px}
 
+.perfume-thumb{width:54px;height:54px;border-radius:12px;object-fit:cover;border:1px solid var(--line);background:var(--sand);flex-shrink:0}
+.preview-box{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;background:var(--bg)}
+.preview-box img{width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid var(--line)}
+
 .order-items{margin:12px 0;padding:10px 14px;background:var(--bg);border-radius:12px;border:1px solid var(--line);font-size:14px}
 .order-items div{padding:3px 0}
 .order-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -193,6 +197,13 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;bor
           <label>الإيحاءات والنفحات (افصل بين الثلاث بعلامة ·)
             <input name="notes" placeholder="عنبر رمادي · بخور · باتشولي" required>
           </label>
+          <label style="grid-column:1/-1">رابط صورة العطر (اختياري)
+            <input name="imageUrl" type="url" placeholder="https://example.com/perfume.jpg أو ./images/perfume.jpg">
+          </label>
+          <div class="preview-box hidden" id="imagePreviewBox">
+            <img id="imagePreviewImg" src="" alt="معاينة صورة العطر">
+            <span class="muted" id="imagePreviewStatus">معاينة الصورة</span>
+          </div>
           <div style="grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
             <button class="btn" type="submit" id="savePerfumeBtn">حفظ العطر</button>
             <button class="ghost" type="button" id="cancelEdit">إلغاء / تفريغ</button>
@@ -276,6 +287,7 @@ const STATUSES = { new:"جديد", preparing:"قيد التجهيز", delivered:
 const CATS = { niche:"نيش", designer:"ديزاينر", alt:"بدائل", bakhoor:"بخور" };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const getPerfumeImage = p => String(p?.image || p?.imageUrl || "").trim();
 
 let editingId = null;
 let allOrders = [];
@@ -292,6 +304,25 @@ function showToast(text){
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
 }
+
+function updateImagePreview(url){
+  const clean = String(url || "").trim();
+  const box = $("imagePreviewBox");
+  const img = $("imagePreviewImg");
+  const status = $("imagePreviewStatus");
+  if(!clean){
+    box.classList.add("hidden");
+    img.removeAttribute("src");
+    return;
+  }
+  box.classList.remove("hidden");
+  status.textContent = "جاري تحميل المعاينة...";
+  img.onload = () => { status.textContent = "معاينة الصورة جاهزة"; };
+  img.onerror = () => { status.textContent = "تعذر تحميل الصورة من هذا الرابط"; };
+  img.src = clean;
+}
+
+$("perfumeForm").imageUrl.addEventListener("input", e => updateImagePreview(e.target.value));
 
 function applyTheme(dark){
   document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
@@ -447,12 +478,20 @@ function renderPerfumes(){
 
   $("perfumeList").innerHTML = filtered.length ? filtered.map(p => {
     const tone = p.tone || "#b08a4f";
+    const imgUrl = getPerfumeImage(p);
+    const thumbHtml = imgUrl
+      ? `<img class="perfume-thumb" src="${esc(imgUrl)}" alt="${esc(p.name)}" onerror="this.style.display='none'">`
+      : "";
+
     return `<div class="card row">
-      <div>
-        <span class="color-dot" style="background:${esc(tone)}"></span>
-        <b>${esc(p.name)}</b>
-        <span class="muted">· ${esc(p.house)} · ${esc(p.size)}</span>
-        <div class="muted">${esc(CATS[p.category] || "")} · ${esc(p.notes)}</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        ${thumbHtml}
+        <div>
+          <span class="color-dot" style="background:${esc(tone)}"></span>
+          <b>${esc(p.name)}</b>
+          <span class="muted">· ${esc(p.house)} · ${esc(p.size)}</span>
+          <div class="muted">${esc(CATS[p.category] || "")} · ${esc(p.notes)}</div>
+        </div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <b>${esc(p.price)} د.ل</b>
@@ -537,6 +576,7 @@ $("perfumeForm").addEventListener("submit", async e => {
   const btn = $("savePerfumeBtn");
   btn.disabled = true;
   const f = new FormData(e.target);
+  const imageUrl = String(f.get("imageUrl") || "").trim();
   const data = {
     name: f.get("name").trim(),
     house: f.get("house").trim(),
@@ -546,6 +586,7 @@ $("perfumeForm").addEventListener("submit", async e => {
     tone: f.get("tone") || "#b08a4f",
     inStock: f.get("inStock") === "true",
     notes: f.get("notes").trim(),
+    image: imageUrl,
     updatedAt: serverTimestamp()
   };
 
@@ -570,6 +611,8 @@ function resetForm(){
   editingId = null;
   $("perfumeForm").reset();
   $("perfumeForm").tone.value = "#b08a4f";
+  $("perfumeForm").imageUrl.value = "";
+  updateImagePreview("");
   $("formTitle").textContent = "إضافة عطر جديد";
 }
 $("cancelEdit").addEventListener("click", resetForm);
@@ -588,6 +631,9 @@ $("perfumeList").addEventListener("click", async e => {
     ["name","house","size","price","category","notes"].forEach(k => form[k].value = p[k] ?? "");
     form.tone.value = p.tone || "#b08a4f";
     form.inStock.value = String(!!p.inStock);
+    const existingImg = getPerfumeImage(p);
+    form.imageUrl.value = existingImg;
+    updateImagePreview(existingImg);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
