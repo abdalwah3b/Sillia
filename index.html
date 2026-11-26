@@ -107,7 +107,10 @@ nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
 .pd-ladder>div{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
 .pd-ladder span{color:var(--muted);font-size:13px}
 .pd-ladder b{font-weight:500;font-size:15px}
-#prodBody .btn-full{margin-top:18px}
+.pd-actions{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.pd-actions .btn-full{margin-top:0}
+.btn-share{width:100%;background:transparent;color:var(--ink);border:1px solid var(--gold);border-radius:999px;padding:11px 16px;font:inherit;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .2s ease,color .2s ease}
+.btn-share:hover{background:var(--sand)}
 
 .kicker{font-size:12px;letter-spacing:3px;color:#7a5a26;text-transform:uppercase;font-weight:600;margin-bottom:12px}
 .about-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:start;max-width:1000px;margin:0 auto}
@@ -508,6 +511,16 @@ onSnapshot(query(collection(db, "perfumes")), snap => {
   renderCat();
   renderFeatured();
   renderCart();
+
+  const params = new URLSearchParams(window.location.search);
+  const sharedPerfume = params.get("perfume") || params.get("p");
+  if(sharedPerfume && !window.__silliaOpenedSharedPerfume){
+    const matched = findItemByKey(sharedPerfume);
+    if(matched){
+      window.__silliaOpenedSharedPerfume = true;
+      openProduct(matched.id);
+    }
+  }
 }, err => {
   console.warn("تعذر قراءة عطور Firestore:", err);
 });
@@ -606,7 +619,16 @@ document.addEventListener("click", e => {
 });
 
 function openSheet(id){ $("ov").classList.add("on"); $(id).classList.add("on"); }
-function closeAll(){ $("ov").classList.remove("on"); document.querySelectorAll(".sheet").forEach(x => x.classList.remove("on")); }
+function closeAll(){
+  $("ov").classList.remove("on");
+  document.querySelectorAll(".sheet").forEach(x => x.classList.remove("on"));
+  if(window.location.search){
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete("perfume");
+    cleanUrl.searchParams.delete("p");
+    window.history.replaceState({}, "", cleanUrl.toString());
+  }
+}
 $("ov").addEventListener("click", closeAll);
 document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", closeAll));
 $("cartBtn").addEventListener("click", () => { renderCart(); openSheet("cartSheet"); });
@@ -801,6 +823,12 @@ $("themeBtn").addEventListener("click", () => {
 
 renderCart();
 
+function buildProductUrl(item){
+  const url = new URL(window.location.href);
+  url.searchParams.set("perfume", String(item.id || item.name || ""));
+  return url.toString();
+}
+
 function openProduct(key){
   const i = findItemByKey(key); if(!i) return;
   const n = String(i.notes || "").split("·").map(t => t.trim());
@@ -826,8 +854,36 @@ function openProduct(key){
       <div><span>قلب</span><b>${esc(heartVal)}</b></div>
       <div><span>قاعدة</span><b>${esc(baseVal)}</b></div>
     </div>
-    <button class="btn-full" id="pdAdd">أضف إلى السلة</button>`;
+    <div class="pd-actions">
+      <button class="btn-full" id="pdAdd">أضف إلى السلة</button>
+      <button type="button" class="btn-share" id="pdCopyLink">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span>نسخ رابط العطر</span>
+      </button>
+    </div>`;
+
   $("pdAdd").addEventListener("click", () => { addToCart(i.id || i.name); closeAll(); });
+
+  $("pdCopyLink").addEventListener("click", async () => {
+    const shareUrl = buildProductUrl(i);
+    const labelEl = $("pdCopyLink").querySelector("span");
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+    } catch (_) {
+      const tmp = document.createElement("input");
+      tmp.value = shareUrl;
+      document.body.appendChild(tmp);
+      tmp.select();
+      document.execCommand("copy");
+      tmp.remove();
+    }
+    if(labelEl){
+      const prev = labelEl.textContent;
+      labelEl.textContent = "تم نسخ الرابط ✓";
+      setTimeout(() => { labelEl.textContent = prev; }, 1800);
+    }
+  });
+
   openSheet("prodSheet");
 }
 document.addEventListener("click", e => {
