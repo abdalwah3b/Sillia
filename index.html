@@ -342,6 +342,9 @@ const BANK_INFO = {
   iban: "LY13005082082022656800014"
 };
 
+const TELEGRAM_BOT_TOKEN = "9278431244:AAFNj-uaikkqpScX1v_7MMhLR76JCr-P0dg";
+const TELEGRAM_CHAT_ID = "1899607232";
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -604,6 +607,40 @@ function buildWhatsAppLink(order){
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
+async function notifyTelegramNewOrder(order, payLabel){
+  const itemsLines = order.items.map(it => `• ${it.name} × ${it.qty} (${it.price * it.qty} د.ل)`).join("\n");
+  const mapLine = order.customer.mapUrl ? `\n🗺️ الخريطة: ${order.customer.mapUrl}` : "";
+  const text = [
+    `🛒 *طلب جديد في متجر Sillia*`,
+    `رقم الطلب: \`${order.ref}\``,
+    `الاسم: ${order.customer.name}`,
+    `الهاتف: ${order.customer.phone}`,
+    `المدينة: ${order.customer.city}`,
+    `العنوان: ${order.customer.address}${mapLine}`,
+    `الدفع: ${payLabel}`,
+    ``,
+    `المنتجات:`,
+    itemsLines,
+    ``,
+    `الإجمالي: *${order.total} د.ل* (${order.count} قطعة)`
+  ].join("\n");
+
+  const endpoint = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+  try {
+    await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text,
+        parse_mode: "Markdown"
+      })
+    });
+  } catch (err) {
+    console.warn("تعذر إرسال إشعار Telegram:", err);
+  }
+}
+
 $("orderForm").addEventListener("submit", async e => {
   e.preventDefault();
   $("orderErr").textContent = "";
@@ -652,6 +689,7 @@ $("orderForm").addEventListener("submit", async e => {
 
   try {
     await addDoc(collection(db, "orders"), orderDoc);
+    await notifyTelegramNewOrder(orderDoc, payLabel);
     const waUrl = buildWhatsAppLink(orderDoc);
     const bankSummaryHtml = payVal === "bank" ? `
       <div class="done-bank">
