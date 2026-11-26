@@ -2,69 +2,177 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,700;1,500&family=Manrope:wght@300;500;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>لوحة إدارة Sillia</title>
 <style>
-:root{--bg:#f7f2eb;--ink:#1f1915;--muted:#7d7166;--line:#e4dacb;--card:#fffdf9;--deep:#5e1c26;--gold:#b08a4f}
+:root{--bg:#f7f2eb;--ink:#1f1915;--muted:#6b6055;--line:#e4dacb;--card:#fffdf9;--deep:#5e1c26;--sand:#efe4d4;--stone:#e0d3bf;--gold:#b08a4f}
+:root[data-theme="dark"]{--bg:#15110f;--ink:#f2ebe0;--muted:#a09384;--line:#3a322c;--card:#201a17;--deep:#d6b67e;--sand:#1f1915;--stone:#2a221d;--gold:#d6b67e}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:15px}
-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--card)}
-header b{font-family:Georgia,serif;letter-spacing:4px;color:var(--deep)}
-.wrap{max-width:900px;margin:0 auto;padding:18px}
-.tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:20px}
-.tabs button{background:none;border:0;padding:10px 0;color:var(--muted);font:inherit;cursor:pointer;position:relative}
-.tabs button.on{color:var(--ink);font-weight:600}
-.tabs button.on::after{content:"";position:absolute;right:0;left:0;bottom:-1px;height:2px;background:var(--gold)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic","Manrope",system-ui,sans-serif;font-size:15px;line-height:1.7}
+.latin{font-family:"Bodoni Moda",Didot,serif}
+
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:10px;background:var(--card)}
+.logo{font-family:"Bodoni Moda",Didot,serif;font-size:26px;letter-spacing:6px;font-weight:700;color:var(--deep)}
+.logo span{font-family:"IBM Plex Sans Arabic",sans-serif;letter-spacing:0;font-size:14px;font-weight:500;color:var(--muted);margin-right:8px}
+
+.tabbar{display:flex;gap:0;border-bottom:0}
+.tabbar .tab{background:none;border:0;border-radius:0;padding:10px 14px;margin:0;color:var(--muted);font:inherit;font-size:15px;position:relative;cursor:pointer;transition:color .35s ease}
+.tabbar .tab:hover{color:var(--ink)}
+.tabbar .tab.on{background:none;color:var(--ink);font-weight:600}
+.tabbar .tab.on::after{content:"";position:absolute;right:14px;left:14px;bottom:0;height:2px;background:var(--gold)}
+
+.hact{display:flex;gap:8px;align-items:center}
+.hact button,.hact a{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:7px 13px;cursor:pointer;font:inherit;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:background .25s,color .25s,border-color .25s}
+.hact button:hover,.hact a:hover{border-color:var(--gold);background:var(--sand)}
+.ibtn{width:40px;height:40px;padding:0;justify-content:center;border-radius:50%}
+
+.wrap{max-width:1040px;margin:0 auto;padding:32px 22px 56px}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.section-head h2{margin:0 0 4px;font-size:21px;font-weight:600}
+.section-head .sub{margin:0;color:var(--muted);font-size:14px}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.stat-box small{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}
+.stat-box b{font-size:22px;font-weight:600;color:var(--deep)}
+
+.filters{display:flex;gap:22px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:22px}
+.filters button{background:none;border:0;border-radius:0;padding:10px 2px;color:var(--muted);font:inherit;font-size:14px;position:relative;cursor:pointer}
+.filters button:hover{color:var(--ink)}
+.filters button.on{color:var(--ink);font-weight:600}
+.filters button.on::after{content:"";position:absolute;right:0;left:0;bottom:-1px;height:2px;background:var(--gold)}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.toolbar input,.toolbar select{padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font:inherit;font-size:14px}
+.toolbar input{flex:1;min-width:200px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;transition:border-color .25s}
+.card:hover{border-color:var(--stone)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:13px}
-input,select,textarea{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
-button.btn{background:var(--deep);color:#fff;border:0;border-radius:999px;padding:10px 18px;font:inherit;cursor:pointer}
-button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font:inherit;cursor:pointer}
+input,select,textarea{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit}
+input[type="color"]{padding:4px;height:44px;cursor:pointer}
+button.btn{background:var(--deep);color:var(--bg);border:0;border-radius:999px;padding:11px 22px;font:inherit;font-size:14px;cursor:pointer;font-weight:500}
+button.btn:disabled{opacity:.6;cursor:not-allowed}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font:inherit;cursor:pointer;text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:5px}
+button.ghost:hover{background:var(--sand)}
 button.danger{color:#9b2c2c;border-color:#e9c4c4}
+:root[data-theme="dark"] button.danger{color:#f09595;border-color:#5c2b2b}
+
 .row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .muted{color:var(--muted);font-size:13px}
-.pill{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:12px}
+.pill{display:inline-block;padding:3px 11px;border-radius:999px;background:var(--sand);border:1px solid var(--line);font-size:12px;color:var(--ink)}
+.pill.st-new{background:#efe4d4;color:var(--deep);border-color:var(--gold);font-weight:600}
+.pill.st-delivered{background:#e7f1ea;color:#1f5c34;border-color:#b7d7c1}
+.pill.st-cancelled{background:#f7e6e6;color:#8c2323;border-color:#e5bcbc}
+.color-dot{display:inline-block;width:13px;height:13px;border-radius:50%;vertical-align:middle;border:1px solid rgba(0,0,0,.18);margin-left:7px}
+
+.order-items{margin:12px 0;padding:10px 14px;background:var(--bg);border-radius:12px;border:1px solid var(--line);font-size:14px}
+.order-items div{padding:3px 0}
+.order-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
 .hidden{display:none!important}
-#msg{color:#9b2c2c;min-height:20px;font-size:14px}
-@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+#msg{color:#9b2c2c;min-height:20px;font-size:14px;word-break:break-word}
+:root[data-theme="dark"] #msg{color:#f09595}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--bg);padding:10px 22px;border-radius:999px;font-size:14px;z-index:60;opacity:0;transition:transform .35s ease,opacity .35s ease;pointer-events:none;box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;border-top:1px solid var(--line)}
+
+@media (max-width:820px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){
+  header{padding:14px 16px}
+  .logo{font-size:22px;letter-spacing:4px}
+  .tabbar{order:3;width:100%;justify-content:center;border-top:1px solid var(--line);padding-top:6px}
+  .tabbar .tab{padding:8px 12px;font-size:14px}
+  .wrap{padding:22px 16px 44px}
+  .grid2{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <header>
-  <b>SILLIA · إدارة</b>
-  <button class="ghost hidden" id="logoutBtn">خروج</button>
+  <div class="logo"><span class="latin">SILLIA</span><span>لوحة الإدارة</span></div>
+  <nav class="tabbar hidden" id="adminNav">
+    <button class="tab on" data-t="orders">الطلبات</button>
+    <button class="tab" data-t="perfumes">العطور</button>
+    <button class="tab" data-t="settings">الإعدادات</button>
+  </nav>
+  <div class="hact">
+    <a href="./index.html" target="_blank" rel="noopener" title="معاينة المتجر">المتجر ↗</a>
+    <button id="themeBtn" class="ibtn" aria-label="الوضع الليلي" title="الوضع الليلي"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    <button class="hidden" id="logoutBtn">خروج</button>
+  </div>
 </header>
 
 <div class="wrap">
   <!-- تسجيل الدخول -->
-  <section id="loginView" class="card" style="max-width:380px;margin:40px auto">
-    <h3 style="margin-top:0">تسجيل الدخول</h3>
+  <section id="loginView" class="card" style="max-width:400px;margin:36px auto">
+    <h2 style="margin:0 0 6px;font-size:20px">تسجيل الدخول</h2>
+    <p class="muted" style="margin:0 0 18px">أدخل بيانات حساب المشرف لإدارة الطلبات والعطور</p>
     <form id="loginForm" class="grid2" style="grid-template-columns:1fr">
-      <label>البريد الإلكتروني<input type="email" name="email" required></label>
-      <label>كلمة المرور<input type="password" name="password" required></label>
-      <button class="btn" type="submit">دخول</button>
+      <label>البريد الإلكتروني<input type="email" name="email" autocomplete="email" required></label>
+      <label>كلمة المرور<input type="password" name="password" autocomplete="current-password" required></label>
+      <button class="btn" type="submit" id="loginBtn">دخول</button>
       <div id="msg"></div>
     </form>
   </section>
 
-  <!-- لوحة الإدارة -->
+  <!-- محتوى لوحة الإدارة -->
   <section id="appView" class="hidden">
-    <div class="tabs">
-      <button class="on" data-t="orders">الطلبات</button>
-      <button data-t="perfumes">العطور</button>
+
+    <!-- تبويب الطلبات -->
+    <div id="tab-orders">
+      <div class="section-head">
+        <div>
+          <h2>إدارة الطلبات</h2>
+          <p class="sub">متابعة الطلبات الواردة وتحديث حالتها وإيرادات المتجر</p>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="orderStats">
+        <div class="stat-box"><small>إجمالي الطلبات</small><b id="stTotalOrders">0</b></div>
+        <div class="stat-box"><small>طلبات جديدة</small><b id="stNewOrders">0</b></div>
+        <div class="stat-box"><small>قيد التجهيز</small><b id="stPrepOrders">0</b></div>
+        <div class="stat-box"><small>إجمالي المبيعات (غير الملغاة)</small><b id="stRevenue">0 د.ل</b></div>
+      </div>
+
+      <div class="filters" id="orderStatusFilters">
+        <button class="on" data-st="all">الكل</button>
+        <button data-st="new">جديد</button>
+        <button data-st="preparing">قيد التجهيز</button>
+        <button data-st="delivered">تم التوصيل</button>
+        <button data-st="cancelled">ملغي</button>
+      </div>
+
+      <div class="toolbar">
+        <input type="search" id="orderSearch" placeholder="ابحث برقم الطلب، اسم العميل، الهاتف، أو المدينة...">
+        <select id="orderCityFilter">
+          <option value="">كل المدن</option>
+        </select>
+      </div>
+
+      <div id="ordersList"><p class="muted">جاري تحميل الطلبات...</p></div>
     </div>
 
-    <!-- الطلبات -->
-    <div id="tab-orders"></div>
-
-    <!-- العطور -->
+    <!-- تبويب العطور -->
     <div id="tab-perfumes" class="hidden">
+      <div class="section-head">
+        <div>
+          <h2>إدارة العطور</h2>
+          <p class="sub">إضافة وتعديل وتصفية عطور النيش والديزاينر والبدائل والبخور</p>
+        </div>
+      </div>
+
       <div class="card">
-        <h3 style="margin-top:0" id="formTitle">إضافة عطر جديد</h3>
+        <h3 style="margin:0 0 14px;font-size:17px" id="formTitle">إضافة عطر جديد</h3>
         <form id="perfumeForm" class="grid2">
-          <label>اسم العطر<input name="name" required></label>
-          <label>الدار<input name="house" required></label>
+          <label>اسم العطر<input name="name" required placeholder="مثال: Nuit Sable"></label>
+          <label>الدار<input name="house" required placeholder="مثال: دار تجريبية أ"></label>
           <label>الحجم<input name="size" placeholder="مثال: 100 مل" required></label>
           <label>السعر (د.ل)<input name="price" type="number" min="0" step="1" required></label>
           <label>التصنيف
@@ -75,27 +183,82 @@ button.danger{color:#9b2c2c;border-color:#e9c4c4}
               <option value="bakhoor">بخور</option>
             </select>
           </label>
-          <label>متوفر
-            <select name="inStock"><option value="true">نعم</option><option value="false">لا</option></select>
+          <label>لون الزجاجة في المتجر<input name="tone" type="color" value="#b08a4f"></label>
+          <label>متوفر في المتجر
+            <select name="inStock">
+              <option value="true">نعم (متوفر)</option>
+              <option value="false">لا (مخفي / نفد)</option>
+            </select>
           </label>
-          <label style="grid-column:1/-1">الإيحاءات والنفحات (افصل بين الثلاث بعلامة ·)<input name="notes" required></label>
-          <div style="grid-column:1/-1;display:flex;gap:10px">
-            <button class="btn" type="submit">حفظ</button>
-            <button class="ghost" type="button" id="cancelEdit">إلغاء</button>
+          <label>الإيحاءات والنفحات (افصل بين الثلاث بعلامة ·)
+            <input name="notes" placeholder="عنبر رمادي · بخور · باتشولي" required>
+          </label>
+          <div style="grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+            <button class="btn" type="submit" id="savePerfumeBtn">حفظ العطر</button>
+            <button class="ghost" type="button" id="cancelEdit">إلغاء / تفريغ</button>
           </div>
         </form>
       </div>
-      <div id="perfumeList"></div>
+
+      <div class="filters" id="perfumeCatFilters">
+        <button class="on" data-pcat="all">الكل</button>
+        <button data-pcat="niche">نيش</button>
+        <button data-pcat="designer">ديزاينر</button>
+        <button data-pcat="alt">بدائل</button>
+        <button data-pcat="bakhoor">بخور</button>
+      </div>
+
+      <div class="toolbar">
+        <input type="search" id="perfumeSearch" placeholder="ابحث باسم العطر، الدار، أو النفحات...">
+        <select id="perfumeStockFilter">
+          <option value="all">كل الحالات</option>
+          <option value="true">متوفر فقط</option>
+          <option value="false">غير متوفر فقط</option>
+        </select>
+      </div>
+
+      <div id="perfumeList"><p class="muted">جاري تحميل العطور...</p></div>
     </div>
+
+    <!-- تبويب الإعدادات -->
+    <div id="tab-settings" class="hidden">
+      <div class="section-head">
+        <div>
+          <h2>إعدادات المتجر والحساب</h2>
+          <p class="sub">معلومات الجلسة الحالية وروابط الوصول السريع</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px;font-size:17px">حساب الإدارة</h3>
+        <p class="muted" style="margin:0 0 14px">البريد المسجل حالياً: <b id="adminEmailLabel" style="color:var(--ink)">—</b></p>
+        <div class="row">
+          <a class="ghost" href="./index.html" target="_blank" rel="noopener">فتح واجهة المتجر ↗</a>
+          <button class="ghost danger" id="settingsLogoutBtn">تسجيل الخروج</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px;font-size:17px">نصائح تشغيلية</h3>
+        <p class="muted" style="margin:0;line-height:1.9">
+          • أي عطر تجعله <b>غير متوفر</b> يتم إخفاؤه تلقائياً من واجهة المتجر دون حذفه من قاعدة البيانات.<br>
+          • عند تحديث حالة الطلب إلى <b>ملغي</b> يتم استبعاده تلقائياً من إجمالي المبيعات في الإحصائيات.<br>
+          • يفضّل دائماً الفصل بين نفحات العطر الثلاث بعلامة النقطة الوسطى (<b>·</b>) لتظهر بدقة في الهرم العطري (أعلى، قلب، قاعدة).
+        </p>
+      </div>
+    </div>
+
   </section>
 </div>
+
+<div class="toast" id="toast">تم الحفظ</div>
+<footer class="latin">Sillia · إدارة المتجر</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ضع إعدادات مشروعك هنا من Firebase Console (Project settings > Your apps)
 const firebaseConfig = {
   apiKey: "AIzaSyDdICo-EAFaCJ9mvd7gT7wjKkyXCR4S2f4",
   authDomain: "sillia-aa319.firebaseapp.com",
@@ -113,102 +276,343 @@ const STATUSES = { new:"جديد", preparing:"قيد التجهيز", delivered:
 const CATS = { niche:"نيش", designer:"ديزاينر", alt:"بدائل", bakhoor:"بخور" };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let editingId = null;
 
-// تسجيل الدخول
+let editingId = null;
+let allOrders = [];
+let allPerfumes = [];
+let activeOrderStatus = "all";
+let activePerfumeCat = "all";
+let listenersStarted = false;
+
+let toastTimer;
+function showToast(text){
+  const t = $("toast");
+  t.textContent = text;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+function applyTheme(dark){
+  document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  try { localStorage.setItem("sillia_admin_theme", dark ? "dark" : "light"); } catch(e){}
+  $("themeBtn").innerHTML = dark
+    ? `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>`
+    : `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>`;
+  $("themeBtn").setAttribute("aria-label", dark ? "الوضع النهاري" : "الوضع الليلي");
+}
+const savedDark = (() => { try { return localStorage.getItem("sillia_admin_theme") === "dark"; } catch(e){ return false; } })();
+applyTheme(savedDark);
+$("themeBtn").addEventListener("click", () => {
+  applyTheme(document.documentElement.getAttribute("data-theme") !== "dark");
+});
+
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   const f = new FormData(e.target);
+  const btn = $("loginBtn");
+  btn.disabled = true;
+  btn.textContent = "جاري الدخول...";
   $("msg").textContent = "";
-  try { await signInWithEmailAndPassword(auth, f.get("email"), f.get("password")); }
-  catch(err){ $("msg").textContent = "البريد أو كلمة المرور غير صحيحة"; }
+  try {
+    await signInWithEmailAndPassword(auth, f.get("email").trim(), f.get("password"));
+  } catch(err){
+    console.error(err);
+    const code = err.code || "";
+    if(code === "auth/invalid-credential" || code === "auth/wrong-password" || code === "auth/user-not-found"){
+      $("msg").textContent = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+    } else if(code === "auth/operation-not-allowed"){
+      $("msg").textContent = "يرجى تفعيل Email/Password وحفظه في Firebase Authentication";
+    } else if(code === "auth/network-request-failed"){
+      $("msg").textContent = "تعذر الاتصال بالشبكة، تأكد من فتح الصفحة عبر رابط http/https";
+    } else {
+      $("msg").textContent = "خطأ: " + (code || err.message);
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "دخول";
+  }
 });
-$("logoutBtn").addEventListener("click", () => signOut(auth));
+
+function handleLogout(){ signOut(auth); }
+$("logoutBtn").addEventListener("click", handleLogout);
+$("settingsLogoutBtn").addEventListener("click", handleLogout);
 
 onAuthStateChanged(auth, user => {
   $("loginView").classList.toggle("hidden", !!user);
   $("appView").classList.toggle("hidden", !user);
+  $("adminNav").classList.toggle("hidden", !user);
   $("logoutBtn").classList.toggle("hidden", !user);
-  if(user) startListeners();
+  if(user){
+    $("adminEmailLabel").textContent = user.email || "—";
+    if(!listenersStarted){ listenersStarted = true; startListeners(); }
+  }
 });
 
-// التبويبات
-document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
-  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x===b));
-  $("tab-orders").classList.toggle("hidden", b.dataset.t !== "orders");
-  $("tab-perfumes").classList.toggle("hidden", b.dataset.t !== "perfumes");
-}));
+function switchMainTab(tabName){
+  document.querySelectorAll("#adminNav .tab").forEach(b => b.classList.toggle("on", b.dataset.t === tabName));
+  $("tab-orders").classList.toggle("hidden", tabName !== "orders");
+  $("tab-perfumes").classList.toggle("hidden", tabName !== "perfumes");
+  $("tab-settings").classList.toggle("hidden", tabName !== "settings");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+document.querySelectorAll("#adminNav .tab").forEach(b => b.addEventListener("click", () => switchMainTab(b.dataset.t)));
 
-// الطلبات
-function startListeners(){
-  onSnapshot(query(collection(db,"orders"), orderBy("createdAt","desc")), snap => {
-    $("tab-orders").innerHTML = snap.empty ? '<p class="muted">لا توجد طلبات بعد.</p>' : snap.docs.map(d => {
-      const o = d.data();
-      const opts = Object.entries(STATUSES).map(([k,v]) => `<option value="${k}" ${o.status===k?"selected":""}>${v}</option>`).join("");
-      return `<div class="card">
-        <div class="row"><b>${esc(o.ref||d.id)}</b><span class="pill">${esc(STATUSES[o.status]||"جديد")}</span></div>
-        <div class="muted" style="margin:8px 0">${esc(o.customer?.name)} · ${esc(o.customer?.phone)} · ${esc(o.customer?.city)}</div>
-        <div class="muted">${esc(o.customer?.address)}</div>
-        <div style="margin:10px 0">${(o.items||[]).map(i => `${esc(i.name)} × ${i.qty}`).join("<br>")}</div>
-        <div class="row"><b>المجموع: ${esc(o.total)} د.ل · ${o.payment==="bank"?"تحويل مصرفي":"كاش"}</b>
-          <select data-order="${d.id}">${opts}</select></div>
-      </div>`;
-    }).join("");
+function updateOrderStats(){
+  const total = allOrders.length;
+  const newCount = allOrders.filter(o => (o.status || "new") === "new").length;
+  const prepCount = allOrders.filter(o => o.status === "preparing").length;
+  const revenue = allOrders
+    .filter(o => o.status !== "cancelled")
+    .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+
+  $("stTotalOrders").textContent = total;
+  $("stNewOrders").textContent = newCount;
+  $("stPrepOrders").textContent = prepCount;
+  $("stRevenue").textContent = revenue + " د.ل";
+}
+
+function populateCityFilter(){
+  const sel = $("orderCityFilter");
+  const currentVal = sel.value;
+  const cities = [...new Set(allOrders.map(o => o.customer?.city).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">كل المدن</option>' + cities.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+  if(cities.includes(currentVal)) sel.value = currentVal;
+}
+
+function renderOrders(){
+  const q = ($("orderSearch").value || "").trim().toLowerCase();
+  const city = $("orderCityFilter").value;
+
+  const filtered = allOrders.filter(o => {
+    const st = o.status || "new";
+    if(activeOrderStatus !== "all" && st !== activeOrderStatus) return false;
+    if(city && o.customer?.city !== city) return false;
+    if(q){
+      const hay = [
+        o.ref, o.id,
+        o.customer?.name, o.customer?.phone, o.customer?.city, o.customer?.address
+      ].join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
   });
 
-  // العطور
-  onSnapshot(query(collection(db,"perfumes"), orderBy("name")), snap => {
-    $("perfumeList").innerHTML = snap.docs.map(d => {
-      const p = d.data();
-      return `<div class="card row">
-        <div><b>${esc(p.name)}</b> <span class="muted">· ${esc(p.house)} · ${esc(p.size)}</span>
-          <div class="muted">${CATS[p.category]||""} · ${esc(p.notes)}</div></div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <b>${esc(p.price)} د.ل</b>
-          <span class="pill">${p.inStock?"متوفر":"غير متوفر"}</span>
-          <button class="ghost" data-edit="${d.id}">تعديل</button>
-          <button class="ghost danger" data-del="${d.id}">حذف</button>
-        </div></div>`;
-    }).join("") || '<p class="muted">لا توجد عطور بعد.</p>';
-    window._perfumes = Object.fromEntries(snap.docs.map(d => [d.id, d.data()]));
+  $("ordersList").innerHTML = filtered.length ? filtered.map(o => {
+    const st = o.status || "new";
+    const opts = Object.entries(STATUSES).map(([k,v]) => `<option value="${k}" ${st===k?"selected":""}>${v}</option>`).join("");
+    const mapLink = o.customer?.mapUrl ? ` · <a href="${esc(o.customer.mapUrl)}" target="_blank" rel="noopener" style="color:var(--deep);font-weight:600">فتح الخريطة ↗</a>` : "";
+    const dateStr = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString("ar-LY", { dateStyle:"medium", timeStyle:"short" }) : "";
+
+    return `<div class="card">
+      <div class="row">
+        <div>
+          <b>${esc(o.ref || o.id)}</b>
+          ${dateStr ? `<span class="muted" style="margin-right:8px">${esc(dateStr)}</span>` : ""}
+        </div>
+        <span class="pill st-${esc(st)}">${esc(STATUSES[st] || "جديد")}</span>
+      </div>
+      <div class="muted" style="margin:8px 0">
+        <b>${esc(o.customer?.name || "—")}</b> · <a href="tel:${esc(o.customer?.phone || "")}" style="color:inherit">${esc(o.customer?.phone || "—")}</a> · ${esc(o.customer?.city || "—")}
+      </div>
+      <div class="muted">${esc(o.customer?.address || "—")}${mapLink}</div>
+      <div class="order-items">
+        ${(o.items || []).map(i => `<div>• ${esc(i.name)} × <b>${esc(i.qty)}</b> <span class="muted">(${esc(i.price)} د.ل)</span></div>`).join("") || '<span class="muted">لا توجد عناصر</span>'}
+      </div>
+      <div class="row">
+        <b>المجموع: ${esc(o.total)} د.ل · ${o.payment === "bank" ? "تحويل مصرفي" : "كاش عند الاستلام"}</b>
+        <div class="order-actions">
+          <select data-order="${esc(o.id)}" aria-label="حالة الطلب">${opts}</select>
+          <button class="ghost danger" data-del-order="${esc(o.id)}">حذف</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("") : '<p class="muted">لا توجد طلبات مطابقة للبحث أو التصفية.</p>';
+}
+
+function renderPerfumes(){
+  const q = ($("perfumeSearch").value || "").trim().toLowerCase();
+  const stock = $("perfumeStockFilter").value;
+
+  const filtered = allPerfumes.filter(p => {
+    if(activePerfumeCat !== "all" && p.category !== activePerfumeCat) return false;
+    if(stock === "true" && !p.inStock) return false;
+    if(stock === "false" && p.inStock) return false;
+    if(q){
+      const hay = [p.name, p.house, p.size, p.notes, CATS[p.category]].join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  $("perfumeList").innerHTML = filtered.length ? filtered.map(p => {
+    const tone = p.tone || "#b08a4f";
+    return `<div class="card row">
+      <div>
+        <span class="color-dot" style="background:${esc(tone)}"></span>
+        <b>${esc(p.name)}</b>
+        <span class="muted">· ${esc(p.house)} · ${esc(p.size)}</span>
+        <div class="muted">${esc(CATS[p.category] || "")} · ${esc(p.notes)}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <b>${esc(p.price)} د.ل</b>
+        <span class="pill">${p.inStock ? "متوفر" : "غير متوفر"}</span>
+        <button class="ghost" data-toggle-stock="${esc(p.id)}">${p.inStock ? "إخفاء" : "إتاحة"}</button>
+        <button class="ghost" data-edit="${esc(p.id)}">تعديل</button>
+        <button class="ghost danger" data-del="${esc(p.id)}">حذف</button>
+      </div>
+    </div>`;
+  }).join("") : '<p class="muted">لا توجد عطور مطابقة للتصفية الحالية.</p>';
+}
+
+function startListeners(){
+  onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), snap => {
+    allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateOrderStats();
+    populateCityFilter();
+    renderOrders();
+  }, err => {
+    console.error(err);
+    $("ordersList").innerHTML = '<p class="muted">تعذر تحميل الطلبات، تحقق من قواعد قاعدة البيانات.</p>';
+  });
+
+  onSnapshot(query(collection(db, "perfumes"), orderBy("name")), snap => {
+    allPerfumes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    window._perfumes = Object.fromEntries(allPerfumes.map(p => [p.id, p]));
+    renderPerfumes();
+  }, err => {
+    console.error(err);
+    $("perfumeList").innerHTML = '<p class="muted">تعذر تحميل العطور، تحقق من قواعد قاعدة البيانات.</p>';
   });
 }
 
-// تغيير حالة الطلب
-$("tab-orders").addEventListener("change", e => {
-  if(e.target.dataset.order) updateDoc(doc(db,"orders",e.target.dataset.order), { status: e.target.value });
+$("orderStatusFilters").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-st]");
+  if(!btn) return;
+  activeOrderStatus = btn.dataset.st;
+  document.querySelectorAll("#orderStatusFilters button").forEach(b => b.classList.toggle("on", b === btn));
+  renderOrders();
+});
+$("orderSearch").addEventListener("input", renderOrders);
+$("orderCityFilter").addEventListener("change", renderOrders);
+
+$("ordersList").addEventListener("change", async e => {
+  const id = e.target.dataset.order;
+  if(!id) return;
+  try {
+    await updateDoc(doc(db, "orders", id), { status: e.target.value });
+    showToast("تم تحديث حالة الطلب");
+  } catch(err){
+    console.error(err);
+    alert("تعذر تحديث حالة الطلب");
+  }
 });
 
-// إضافة/تعديل العطر
+$("ordersList").addEventListener("click", async e => {
+  const delId = e.target.dataset.delOrder;
+  if(!delId) return;
+  if(confirm("هل تريد حذف هذا الطلب نهائياً؟")){
+    try {
+      await deleteDoc(doc(db, "orders", delId));
+      showToast("تم حذف الطلب");
+    } catch(err){
+      console.error(err);
+      alert("تعذر حذف الطلب");
+    }
+  }
+});
+
+$("perfumeCatFilters").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-pcat]");
+  if(!btn) return;
+  activePerfumeCat = btn.dataset.pcat;
+  document.querySelectorAll("#perfumeCatFilters button").forEach(b => b.classList.toggle("on", b === btn));
+  renderPerfumes();
+});
+$("perfumeSearch").addEventListener("input", renderPerfumes);
+$("perfumeStockFilter").addEventListener("change", renderPerfumes);
+
 $("perfumeForm").addEventListener("submit", async e => {
   e.preventDefault();
+  const btn = $("savePerfumeBtn");
+  btn.disabled = true;
   const f = new FormData(e.target);
   const data = {
-    name: f.get("name").trim(), house: f.get("house").trim(), size: f.get("size").trim(),
-    price: Number(f.get("price")), category: f.get("category"),
-    inStock: f.get("inStock") === "true", notes: f.get("notes").trim(),
+    name: f.get("name").trim(),
+    house: f.get("house").trim(),
+    size: f.get("size").trim(),
+    price: Number(f.get("price")),
+    category: f.get("category"),
+    tone: f.get("tone") || "#b08a4f",
+    inStock: f.get("inStock") === "true",
+    notes: f.get("notes").trim(),
     updatedAt: serverTimestamp()
   };
-  if(editingId){ await updateDoc(doc(db,"perfumes",editingId), data); }
-  else { await addDoc(collection(db,"perfumes"), { ...data, createdAt: serverTimestamp() }); }
-  resetForm();
+
+  try {
+    if(editingId){
+      await updateDoc(doc(db, "perfumes", editingId), data);
+      showToast("تم تحديث بيانات العطر");
+    } else {
+      await addDoc(collection(db, "perfumes"), { ...data, createdAt: serverTimestamp() });
+      showToast("تمت إضافة العطر الجديد");
+    }
+    resetForm();
+  } catch(err){
+    console.error(err);
+    alert("حدث خطأ أثناء حفظ العطر");
+  } finally {
+    btn.disabled = false;
+  }
 });
+
 function resetForm(){
-  editingId = null; $("perfumeForm").reset(); $("formTitle").textContent = "إضافة عطر جديد";
+  editingId = null;
+  $("perfumeForm").reset();
+  $("perfumeForm").tone.value = "#b08a4f";
+  $("formTitle").textContent = "إضافة عطر جديد";
 }
 $("cancelEdit").addEventListener("click", resetForm);
 
-$("perfumeList").addEventListener("click", e => {
-  const id = e.target.dataset.edit, del = e.target.dataset.del;
-  if(id){
-    const p = window._perfumes[id];
-    editingId = id; $("formTitle").textContent = "تعديل العطر";
+$("perfumeList").addEventListener("click", async e => {
+  const editId = e.target.dataset.edit;
+  const delId = e.target.dataset.del;
+  const stockId = e.target.dataset.toggleStock;
+
+  if(editId){
+    const p = window._perfumes?.[editId];
+    if(!p) return;
+    editingId = editId;
+    $("formTitle").textContent = "تعديل العطر: " + (p.name || "");
     const form = $("perfumeForm");
     ["name","house","size","price","category","notes"].forEach(k => form[k].value = p[k] ?? "");
+    form.tone.value = p.tone || "#b08a4f";
     form.inStock.value = String(!!p.inStock);
-    window.scrollTo({top:0,behavior:"smooth"});
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  if(del && confirm("هل تريد حذف هذا العطر؟")) deleteDoc(doc(db,"perfumes",del));
+
+  if(stockId){
+    const p = window._perfumes?.[stockId];
+    if(!p) return;
+    try {
+      await updateDoc(doc(db, "perfumes", stockId), { inStock: !p.inStock, updatedAt: serverTimestamp() });
+      showToast(!p.inStock ? "تمت إتاحة العطر في المتجر" : "تم إخفاء العطر من المتجر");
+    } catch(err){
+      console.error(err);
+      alert("تعذر تغيير حالة التوفر");
+    }
+  }
+
+  if(delId && confirm("هل تريد حذف هذا العطر نهائياً؟")){
+    try {
+      await deleteDoc(doc(db, "perfumes", delId));
+      if(editingId === delId) resetForm();
+      showToast("تم حذف العطر");
+    } catch(err){
+      console.error(err);
+      alert("تعذر حذف العطر");
+    }
+  }
 });
 </script>
 </body>
