@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة إدارة Sillia</title>
+<style>
+:root{--bg:#f7f2eb;--ink:#1f1915;--muted:#7d7166;--line:#e4dacb;--card:#fffdf9;--deep:#5e1c26;--gold:#b08a4f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:15px}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--card)}
+header b{font-family:Georgia,serif;letter-spacing:4px;color:var(--deep)}
+.wrap{max-width:900px;margin:0 auto;padding:18px}
+.tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.tabs button{background:none;border:0;padding:10px 0;color:var(--muted);font:inherit;cursor:pointer;position:relative}
+.tabs button.on{color:var(--ink);font-weight:600}
+.tabs button.on::after{content:"";position:absolute;right:0;left:0;bottom:-1px;height:2px;background:var(--gold)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:13px}
+input,select,textarea{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+button.btn{background:var(--deep);color:#fff;border:0;border-radius:999px;padding:10px 18px;font:inherit;cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font:inherit;cursor:pointer}
+button.danger{color:#9b2c2c;border-color:#e9c4c4}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.muted{color:var(--muted);font-size:13px}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:12px}
+.hidden{display:none!important}
+#msg{color:#9b2c2c;min-height:20px;font-size:14px}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <b>SILLIA · إدارة</b>
+  <button class="ghost hidden" id="logoutBtn">خروج</button>
+</header>
+
+<div class="wrap">
+  <!-- تسجيل الدخول -->
+  <section id="loginView" class="card" style="max-width:380px;margin:40px auto">
+    <h3 style="margin-top:0">تسجيل الدخول</h3>
+    <form id="loginForm" class="grid2" style="grid-template-columns:1fr">
+      <label>البريد الإلكتروني<input type="email" name="email" required></label>
+      <label>كلمة المرور<input type="password" name="password" required></label>
+      <button class="btn" type="submit">دخول</button>
+      <div id="msg"></div>
+    </form>
+  </section>
+
+  <!-- لوحة الإدارة -->
+  <section id="appView" class="hidden">
+    <div class="tabs">
+      <button class="on" data-t="orders">الطلبات</button>
+      <button data-t="perfumes">العطور</button>
+    </div>
+
+    <!-- الطلبات -->
+    <div id="tab-orders"></div>
+
+    <!-- العطور -->
+    <div id="tab-perfumes" class="hidden">
+      <div class="card">
+        <h3 style="margin-top:0" id="formTitle">إضافة عطر جديد</h3>
+        <form id="perfumeForm" class="grid2">
+          <label>اسم العطر<input name="name" required></label>
+          <label>الدار<input name="house" required></label>
+          <label>الحجم<input name="size" placeholder="مثال: 100 مل" required></label>
+          <label>السعر (د.ل)<input name="price" type="number" min="0" step="1" required></label>
+          <label>التصنيف
+            <select name="category">
+              <option value="niche">نيش</option>
+              <option value="designer">ديزاينر</option>
+              <option value="alt">بدائل</option>
+              <option value="bakhoor">بخور</option>
+            </select>
+          </label>
+          <label>متوفر
+            <select name="inStock"><option value="true">نعم</option><option value="false">لا</option></select>
+          </label>
+          <label style="grid-column:1/-1">الإيحاءات والنفحات (افصل بين الثلاث بعلامة ·)<input name="notes" required></label>
+          <div style="grid-column:1/-1;display:flex;gap:10px">
+            <button class="btn" type="submit">حفظ</button>
+            <button class="ghost" type="button" id="cancelEdit">إلغاء</button>
+          </div>
+        </form>
+      </div>
+      <div id="perfumeList"></div>
+    </div>
+  </section>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ضع إعدادات مشروعك هنا من Firebase Console (Project settings > Your apps)
+const firebaseConfig = {
+  apiKey: "AIzaSyDdICo-EAFaCJ9mvd7gT7wjKkyXCR4S2f4",
+  authDomain: "sillia-aa319.firebaseapp.com",
+  projectId: "sillia-aa319",
+  storageBucket: "sillia-aa319.firebasestorage.app",
+  messagingSenderId: "646622417573",
+  appId: "1:646622417573:web:2937ded7d2d22bdd7bf34c"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const STATUSES = { new:"جديد", preparing:"قيد التجهيز", delivered:"تم التوصيل", cancelled:"ملغي" };
+const CATS = { niche:"نيش", designer:"ديزاينر", alt:"بدائل", bakhoor:"بخور" };
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let editingId = null;
+
+// تسجيل الدخول
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  $("msg").textContent = "";
+  try { await signInWithEmailAndPassword(auth, f.get("email"), f.get("password")); }
+  catch(err){ $("msg").textContent = "البريد أو كلمة المرور غير صحيحة"; }
+});
+$("logoutBtn").addEventListener("click", () => signOut(auth));
+
+onAuthStateChanged(auth, user => {
+  $("loginView").classList.toggle("hidden", !!user);
+  $("appView").classList.toggle("hidden", !user);
+  $("logoutBtn").classList.toggle("hidden", !user);
+  if(user) startListeners();
+});
+
+// التبويبات
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x===b));
+  $("tab-orders").classList.toggle("hidden", b.dataset.t !== "orders");
+  $("tab-perfumes").classList.toggle("hidden", b.dataset.t !== "perfumes");
+}));
+
+// الطلبات
+function startListeners(){
+  onSnapshot(query(collection(db,"orders"), orderBy("createdAt","desc")), snap => {
+    $("tab-orders").innerHTML = snap.empty ? '<p class="muted">لا توجد طلبات بعد.</p>' : snap.docs.map(d => {
+      const o = d.data();
+      const opts = Object.entries(STATUSES).map(([k,v]) => `<option value="${k}" ${o.status===k?"selected":""}>${v}</option>`).join("");
+      return `<div class="card">
+        <div class="row"><b>${esc(o.ref||d.id)}</b><span class="pill">${esc(STATUSES[o.status]||"جديد")}</span></div>
+        <div class="muted" style="margin:8px 0">${esc(o.customer?.name)} · ${esc(o.customer?.phone)} · ${esc(o.customer?.city)}</div>
+        <div class="muted">${esc(o.customer?.address)}</div>
+        <div style="margin:10px 0">${(o.items||[]).map(i => `${esc(i.name)} × ${i.qty}`).join("<br>")}</div>
+        <div class="row"><b>المجموع: ${esc(o.total)} د.ل · ${o.payment==="bank"?"تحويل مصرفي":"كاش"}</b>
+          <select data-order="${d.id}">${opts}</select></div>
+      </div>`;
+    }).join("");
+  });
+
+  // العطور
+  onSnapshot(query(collection(db,"perfumes"), orderBy("name")), snap => {
+    $("perfumeList").innerHTML = snap.docs.map(d => {
+      const p = d.data();
+      return `<div class="card row">
+        <div><b>${esc(p.name)}</b> <span class="muted">· ${esc(p.house)} · ${esc(p.size)}</span>
+          <div class="muted">${CATS[p.category]||""} · ${esc(p.notes)}</div></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <b>${esc(p.price)} د.ل</b>
+          <span class="pill">${p.inStock?"متوفر":"غير متوفر"}</span>
+          <button class="ghost" data-edit="${d.id}">تعديل</button>
+          <button class="ghost danger" data-del="${d.id}">حذف</button>
+        </div></div>`;
+    }).join("") || '<p class="muted">لا توجد عطور بعد.</p>';
+    window._perfumes = Object.fromEntries(snap.docs.map(d => [d.id, d.data()]));
+  });
+}
+
+// تغيير حالة الطلب
+$("tab-orders").addEventListener("change", e => {
+  if(e.target.dataset.order) updateDoc(doc(db,"orders",e.target.dataset.order), { status: e.target.value });
+});
+
+// إضافة/تعديل العطر
+$("perfumeForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const data = {
+    name: f.get("name").trim(), house: f.get("house").trim(), size: f.get("size").trim(),
+    price: Number(f.get("price")), category: f.get("category"),
+    inStock: f.get("inStock") === "true", notes: f.get("notes").trim(),
+    updatedAt: serverTimestamp()
+  };
+  if(editingId){ await updateDoc(doc(db,"perfumes",editingId), data); }
+  else { await addDoc(collection(db,"perfumes"), { ...data, createdAt: serverTimestamp() }); }
+  resetForm();
+});
+function resetForm(){
+  editingId = null; $("perfumeForm").reset(); $("formTitle").textContent = "إضافة عطر جديد";
+}
+$("cancelEdit").addEventListener("click", resetForm);
+
+$("perfumeList").addEventListener("click", e => {
+  const id = e.target.dataset.edit, del = e.target.dataset.del;
+  if(id){
+    const p = window._perfumes[id];
+    editingId = id; $("formTitle").textContent = "تعديل العطر";
+    const form = $("perfumeForm");
+    ["name","house","size","price","category","notes"].forEach(k => form[k].value = p[k] ?? "");
+    form.inStock.value = String(!!p.inStock);
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  if(del && confirm("هل تريد حذف هذا العطر؟")) deleteDoc(doc(db,"perfumes",del));
+});
+</script>
+</body>
+</html>
