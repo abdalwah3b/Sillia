@@ -50,6 +50,10 @@ nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
 
 .hact{display:flex;gap:8px;align-items:center}
 .hact button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;font:inherit;font-size:13px}
+.hact .wa-hdr{border-color:#1f7a4c;color:#1f7a4c}
+.hact .wa-hdr:hover{background:#1f7a4c;color:#fff}
+:root[data-theme="dark"] .hact .wa-hdr{border-color:#38a169;color:#68d391}
+:root[data-theme="dark"] .hact .wa-hdr:hover{background:#2f855a;color:#fff}
 .badge{background:var(--deep);color:var(--bg);border-radius:999px;padding:0 7px;font-size:12px}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .4s ease;z-index:40}
 .overlay.on{opacity:1;pointer-events:auto}
@@ -86,6 +90,11 @@ nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
 .ibtn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;padding:0;border-radius:50%}
 .ibtn .badge{position:absolute;top:-4px;left:-4px;margin:0;min-width:20px;height:20px;line-height:20px;text-align:center;padding:0 5px;font-size:11px}
 
+.float-cart{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:20px;z-index:35;display:none;align-items:center;gap:10px;background:var(--deep);color:var(--bg);border:1px solid var(--gold);border-radius:999px;padding:11px 18px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 12px 28px rgba(0,0,0,.22);transition:transform .25s ease,opacity .25s ease}
+.float-cart.show{display:inline-flex}
+.float-cart:hover{transform:translateY(-2px)}
+.float-cart .fc-cnt{background:var(--bg);color:var(--deep);border-radius:999px;padding:1px 8px;font-size:12px;font-weight:700}
+
 .hero-grid{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:20px;max-width:1080px;margin:0 auto;text-align:right}
 .hero-txt p{color:var(--muted);margin:0 0 6px;max-width:420px;font-size:17px}
 .hero-txt .kicker{font-size:12px;letter-spacing:3px;color:#7a5a26;text-transform:uppercase;font-weight:600;margin-bottom:12px}
@@ -111,6 +120,8 @@ nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
 .pd-actions .btn-full{margin-top:0}
 .btn-share{width:100%;background:transparent;color:var(--ink);border:1px solid var(--gold);border-radius:999px;padding:11px 16px;font:inherit;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .2s ease,color .2s ease}
 .btn-share:hover{background:var(--sand)}
+.btn-share-wa{width:100%;background:#1f7a4c;color:#fff;border:0;border-radius:999px;padding:11px 16px;font:inherit;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:opacity .2s ease}
+.btn-share-wa:hover{opacity:.94}
 
 .kicker{font-size:12px;letter-spacing:3px;color:#7a5a26;text-transform:uppercase;font-weight:600;margin-bottom:12px}
 .about-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:start;max-width:1000px;margin:0 auto}
@@ -171,6 +182,7 @@ nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
   .tab{padding:8px 10px;font-size:14px}
   .hact{gap:6px}
   .ibtn{width:38px;height:38px}
+  .float-cart{bottom:calc(16px + env(safe-area-inset-bottom,0px));left:14px;padding:10px 15px;font-size:13px}
   .section{padding:36px 16px}
   .hero{padding:44px 16px 40px}
   .hero-txt h1{font-size:46px}
@@ -210,6 +222,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:32px 22px;bor
   <nav class="tabbar"><button class="tab on" data-t="home">الرئيسية</button><button class="tab" data-t="collection">العطور</button><button class="tab" data-t="about">عن المتجر</button></nav>
   <div class="hact">
     <button id="themeBtn" class="ibtn" aria-label="الوضع الليلي" title="الوضع الليلي"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    <button id="waHeaderBtn" class="ibtn wa-hdr" type="button" aria-label="تواصل واتساب" title="تواصل واتساب"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.5 7.5L3 20.5l1.5-5.3A8.5 8.5 0 1 1 21 11.5z"/></svg></button>
     <button id="cartBtn" class="ibtn" aria-label="السلة" title="السلة"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="cartBadge">0</span></button>
   </div>
 </header>
@@ -278,6 +291,13 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:32px 22px;bor
 </section>
 
 <footer class="latin">Sillia · عطرك في كل أثر</footer>
+
+<button id="floatingCartBtn" class="float-cart" type="button" aria-label="فتح السلة">
+  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>
+  <span>السلة</span>
+  <span class="fc-cnt" id="floatCartCount">0</span>
+  <span id="floatCartTotal">0 د.ل</span>
+</button>
 
 <div class="overlay" id="ov"></div>
 <aside class="sheet" id="cartSheet">
@@ -378,6 +398,7 @@ function formatGender(val){
 
 let items = [];
 let activeCat = "niche";
+let currentOpenedPerfume = null;
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
@@ -570,6 +591,16 @@ const priceOf = key => findItemByKey(key)?.price || 0;
 function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
 function cartTotal(){ return Object.keys(cart).reduce((t,k)=> t + priceOf(k)*cart[k], 0); }
 
+function syncFloatingCart(){
+  const cnt = cartCount();
+  const tot = cartTotal();
+  const floatBtn = $("floatingCartBtn");
+  if(!floatBtn) return;
+  floatBtn.classList.toggle("show", cnt > 0);
+  $("floatCartCount").textContent = cnt;
+  $("floatCartTotal").textContent = tot + " د.ل";
+}
+
 function renderCart(){
   const keys = Object.keys(cart).filter(k => cart[k] > 0);
   const bagIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>';
@@ -592,6 +623,7 @@ function renderCart(){
   }).join("") : `<div class="empty-cart">${bagIcon}<p>سلتك فارغة</p><small>أضف عطرك المفضل ليظهر هنا</small></div>`;
   $("cartTotal").textContent = cartTotal() + " د.ل";
   $("cartBadge").textContent = cartCount();
+  syncFloatingCart();
 }
 
 function addToCart(key){
@@ -620,6 +652,7 @@ document.addEventListener("click", e => {
 
 function openSheet(id){ $("ov").classList.add("on"); $(id).classList.add("on"); }
 function closeAll(){
+  currentOpenedPerfume = null;
   $("ov").classList.remove("on");
   document.querySelectorAll(".sheet").forEach(x => x.classList.remove("on"));
   if(window.location.search){
@@ -632,6 +665,26 @@ function closeAll(){
 $("ov").addEventListener("click", closeAll);
 document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", closeAll));
 $("cartBtn").addEventListener("click", () => { renderCart(); openSheet("cartSheet"); });
+$("floatingCartBtn").addEventListener("click", () => { renderCart(); openSheet("cartSheet"); });
+
+$("waHeaderBtn").addEventListener("click", () => {
+  const lines = ["مرحباً متجر Sillia، أود التواصل معكم."];
+  if($("prodSheet").classList.contains("on") && currentOpenedPerfume){
+    lines.push(`استفسار بخصوص عطر: ${currentOpenedPerfume.name} (${currentOpenedPerfume.price} د.ل)`);
+  } else {
+    const keys = Object.keys(cart).filter(k => cart[k] > 0);
+    if(keys.length){
+      lines.push("المنتجات في سلسلتي الحالية:");
+      keys.forEach(k => {
+        const it = findItemByKey(k);
+        if(it) lines.push(`- ${it.name} × ${cart[k]}`);
+      });
+    }
+  }
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
+  window.open(url, "_blank", "noopener");
+});
+
 $("toCheckout").addEventListener("click", () => {
   if(!cartCount()){ return; }
   $("orderErr").textContent = "";
@@ -829,8 +882,20 @@ function buildProductUrl(item){
   return url.toString();
 }
 
+function buildWhatsAppShareUrl(item){
+  const shareUrl = buildProductUrl(item);
+  const metaLine = [item.house, item.size, item.price ? `${item.price} د.ل` : ""].filter(Boolean).join(" · ");
+  const text = [
+    `عطر ${item.name} من متجر Sillia`,
+    metaLine,
+    shareUrl
+  ].filter(Boolean).join("\n");
+  return `https://wa.me/?text=${encodeURIComponent(text)}`;
+}
+
 function openProduct(key){
   const i = findItemByKey(key); if(!i) return;
+  currentOpenedPerfume = i;
   const n = String(i.notes || "").split("·").map(t => t.trim());
   const topVal = i.topNote || n[0] || "—";
   const heartVal = i.heartNote || n[1] || "—";
@@ -860,6 +925,10 @@ function openProduct(key){
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
         <span>نسخ رابط العطر</span>
       </button>
+      <a class="btn-share-wa" href="${esc(buildWhatsAppShareUrl(i))}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.5 7.5L3 20.5l1.5-5.3A8.5 8.5 0 1 1 21 11.5z"/></svg>
+        <span>مشاركة عبر واتساب</span>
+      </a>
     </div>`;
 
   $("pdAdd").addEventListener("click", () => { addToCart(i.id || i.name); closeAll(); });
