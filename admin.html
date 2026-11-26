@@ -136,7 +136,8 @@ button.danger:hover{background:#f9e6e6;border-color:#d49a9a}
 .setting-row:last-child{border-bottom:0;padding-bottom:4px}
 .setting-row strong{display:block;font-size:14.5px;font-weight:600;margin-bottom:2px}
 .setting-row span{display:block;font-size:13px;color:var(--muted)}
-.setting-control{min-width:190px;max-width:260px;flex:0 1 240px}
+.setting-control{width:220px;max-width:100%;flex:0 0 auto;height:40px;line-height:1.35;padding:7px 12px;font-size:13.5px}
+select.setting-control{padding-block:0;height:40px;line-height:38px}
 
 .empty-box{text-align:center;padding:34px 20px;background:var(--card);border:1px dashed var(--line);border-radius:18px;color:var(--muted);font-size:14px}
 
@@ -163,8 +164,8 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;bor
   .filters{gap:6px;padding:6px;border-radius:14px}
   .filters button{flex:1 1 auto;text-align:center;padding:7px 10px;font-size:12.5px}
   .grid2{grid-template-columns:1fr}
-  .setting-row{flex-direction:column;align-items:flex-start;gap:10px}
-  .setting-control{width:100%;max-width:none;min-width:0}
+  .setting-row{flex-direction:column;align-items:flex-start;gap:8px}
+  .setting-control{width:100%;max-width:none}
   .order-actions{width:100%}
   .order-actions select{flex:1}
 }
@@ -467,6 +468,8 @@ try {
 
 const STATUSES = { new:"جديد", preparing:"قيد التجهيز", delivered:"تم التوصيل", cancelled:"ملغي" };
 const CATS = { niche:"نيش", designer:"ديزاينر", alt:"بدائل", bakhoor:"بخور" };
+const VALID_TABS = new Set(["orders", "perfumes", "settings"]);
+const TAB_STORAGE_KEY = "sillia_admin_active_tab";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const getPerfumeImage = p => String(p?.image || p?.imageUrl || "").trim();
@@ -481,6 +484,29 @@ const normalizeGenderValue = val => {
   if(["women", "female", "woman", "نسائي", "نساء", "نسائية"].includes(raw)) return "women";
   return "men";
 };
+
+function getSavedTab(){
+  try {
+    const hashMatch = (location.hash || "").match(/^#tab=([a-z]+)$/i);
+    if(hashMatch && VALID_TABS.has(hashMatch[1].toLowerCase())){
+      return hashMatch[1].toLowerCase();
+    }
+    const stored = localStorage.getItem(TAB_STORAGE_KEY);
+    if(stored && VALID_TABS.has(stored)) return stored;
+  } catch(_){}
+  return "orders";
+}
+
+function persistTab(tabName){
+  if(!VALID_TABS.has(tabName)) return;
+  try { localStorage.setItem(TAB_STORAGE_KEY, tabName); } catch(_){}
+  try {
+    const targetHash = `#tab=${tabName}`;
+    if(location.hash !== targetHash){
+      history.replaceState(null, "", targetHash);
+    }
+  } catch(_){}
+}
 
 const PREFS_KEY = "sillia_admin_prefs_v1";
 let prefs = (() => {
@@ -806,6 +832,15 @@ function handleLogout(){ signOut(auth); }
 $("logoutBtn").addEventListener("click", handleLogout);
 $("settingsLogoutBtn").addEventListener("click", handleLogout);
 
+function applyMainTabUI(tabName, shouldScroll = false){
+  const safeTab = VALID_TABS.has(tabName) ? tabName : "orders";
+  document.querySelectorAll("#adminNav .tab").forEach(b => b.classList.toggle("on", b.dataset.t === safeTab));
+  $("tab-orders").classList.toggle("hidden", safeTab !== "orders");
+  $("tab-perfumes").classList.toggle("hidden", safeTab !== "perfumes");
+  $("tab-settings").classList.toggle("hidden", safeTab !== "settings");
+  if(shouldScroll) window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 onAuthStateChanged(auth, user => {
   $("loginView").classList.toggle("hidden", !!user);
   $("appView").classList.toggle("hidden", !user);
@@ -813,18 +848,20 @@ onAuthStateChanged(auth, user => {
   $("logoutBtn").classList.toggle("hidden", !user);
   if(user){
     $("adminEmailLabel").textContent = user.email || "—";
+    applyMainTabUI(getSavedTab(), false);
     if(!listenersStarted){ listenersStarted = true; startListeners(); }
   }
 });
 
 function switchMainTab(tabName){
-  document.querySelectorAll("#adminNav .tab").forEach(b => b.classList.toggle("on", b.dataset.t === tabName));
-  $("tab-orders").classList.toggle("hidden", tabName !== "orders");
-  $("tab-perfumes").classList.toggle("hidden", tabName !== "perfumes");
-  $("tab-settings").classList.toggle("hidden", tabName !== "settings");
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  const safeTab = VALID_TABS.has(tabName) ? tabName : "orders";
+  persistTab(safeTab);
+  applyMainTabUI(safeTab, true);
 }
 document.querySelectorAll("#adminNav .tab").forEach(b => b.addEventListener("click", () => switchMainTab(b.dataset.t)));
+window.addEventListener("hashchange", () => {
+  if(auth.currentUser) applyMainTabUI(getSavedTab(), false);
+});
 
 function updateOrderStats(){
   const total = allOrders.length;
