@@ -49,11 +49,9 @@ nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
 .fxd.out{opacity:0;transform:translateY(10px)}
 
 .hact{display:flex;gap:8px;align-items:center}
-.hact button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;font:inherit;font-size:13px}
-.hact .wa-hdr{border-color:#1f7a4c;color:#1f7a4c}
-.hact .wa-hdr:hover{background:#1f7a4c;color:#fff}
-:root[data-theme="dark"] .hact .wa-hdr{border-color:#38a169;color:#68d391}
-:root[data-theme="dark"] .hact .wa-hdr:hover{background:#2f855a;color:#fff}
+.hact button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;font:inherit;font-size:13px;transition:background .35s ease,color .35s ease,border-color .35s ease}
+.hact button:hover{background:var(--sand)}
+.hact .wa-hdr .wa-glyph{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--sand);color:var(--ink)}
 .badge{background:var(--deep);color:var(--bg);border-radius:999px;padding:0 7px;font-size:12px}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .4s ease;z-index:40}
 .overlay.on{opacity:1;pointer-events:auto}
@@ -90,10 +88,10 @@ nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
 .ibtn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;padding:0;border-radius:50%}
 .ibtn .badge{position:absolute;top:-4px;left:-4px;margin:0;min-width:20px;height:20px;line-height:20px;text-align:center;padding:0 5px;font-size:11px}
 
-.float-cart{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:20px;z-index:35;display:none;align-items:center;gap:10px;background:var(--deep);color:var(--bg);border:1px solid var(--gold);border-radius:999px;padding:11px 18px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 12px 28px rgba(0,0,0,.22);transition:transform .25s ease,opacity .25s ease}
-.float-cart.show{display:inline-flex}
-.float-cart:hover{transform:translateY(-2px)}
-.float-cart .fc-cnt{background:var(--bg);color:var(--deep);border-radius:999px;padding:1px 8px;font-size:12px;font-weight:700}
+.float-cart{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:20px;z-index:35;display:inline-flex;align-items:center;gap:10px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:11px 18px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 12px 28px rgba(0,0,0,.12);opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1),background .35s ease,border-color .35s ease}
+.float-cart.show{opacity:1;transform:translateY(0);pointer-events:auto;border-color:var(--gold)}
+.float-cart.show:hover{transform:translateY(-2px);background:var(--sand)}
+.float-cart .fc-cnt{background:var(--deep);color:var(--bg);border-radius:999px;padding:1px 8px;font-size:12px;font-weight:700}
 
 .hero-grid{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:20px;max-width:1080px;margin:0 auto;text-align:right}
 .hero-txt p{color:var(--muted);margin:0 0 6px;max-width:420px;font-size:17px}
@@ -222,7 +220,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:32px 22px;bor
   <nav class="tabbar"><button class="tab on" data-t="home">الرئيسية</button><button class="tab" data-t="collection">العطور</button><button class="tab" data-t="about">عن المتجر</button></nav>
   <div class="hact">
     <button id="themeBtn" class="ibtn" aria-label="الوضع الليلي" title="الوضع الليلي"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
-    <button id="waHeaderBtn" class="ibtn wa-hdr" type="button" aria-label="تواصل واتساب" title="تواصل واتساب"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.5 7.5L3 20.5l1.5-5.3A8.5 8.5 0 1 1 21 11.5z"/></svg></button>
+    <button id="waHeaderBtn" class="ibtn wa-hdr" type="button" aria-label="تواصل واتساب" title="تواصل واتساب"><span class="wa-glyph" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.5 7.5L3 20.5l1.5-5.3A8.5 8.5 0 1 1 21 11.5z"/><path d="M9.5 9.5c.3-.6.8-.7 1.2-.5l1 .5c.3.2.4.5.2.8l-.4.8c.4.8 1 1.4 1.8 1.8l.8-.4c.3-.2.6-.1.8.2l.5 1c.2.4.1.9-.5 1.2-.8.4-1.9.3-3.1-.5-1.2-.8-2.2-1.8-3-3-.8-1.2-.9-2.3-.5-3.1z"/></svg></span></button>
     <button id="cartBtn" class="ibtn" aria-label="السلة" title="السلة"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="cartBadge">0</span></button>
   </div>
 </header>
@@ -596,9 +594,11 @@ function syncFloatingCart(){
   const tot = cartTotal();
   const floatBtn = $("floatingCartBtn");
   if(!floatBtn) return;
-  floatBtn.classList.toggle("show", cnt > 0);
   $("floatCartCount").textContent = cnt;
   $("floatCartTotal").textContent = tot + " د.ل";
+  requestAnimationFrame(() => {
+    floatBtn.classList.toggle("show", cnt > 0);
+  });
 }
 
 function renderCart(){
