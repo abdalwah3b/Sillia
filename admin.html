@@ -305,7 +305,12 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;bor
 
       <div class="toolbar">
         <input type="search" id="perfumeSearch" placeholder="ابحث باسم العطر، الدار، أو النفحات...">
-        <select id="perfumeStockFilter">
+        <select id="perfumeGenderFilter" aria-label="فلترة حسب الفئة">
+          <option value="all">كل الفئات (رجالي / نسائي)</option>
+          <option value="men">رجالي فقط</option>
+          <option value="women">نسائي فقط</option>
+        </select>
+        <select id="perfumeStockFilter" aria-label="فلترة حسب التوفر">
           <option value="all">كل الحالات</option>
           <option value="true">متوفر فقط</option>
           <option value="false">غير متوفر فقط</option>
@@ -450,7 +455,6 @@ try {
 
 const STATUSES = { new:"جديد", preparing:"قيد التجهيز", delivered:"تم التوصيل", cancelled:"ملغي" };
 const CATS = { niche:"نيش", designer:"ديزاينر", alt:"بدائل", bakhoor:"بخور" };
-const GENDERS = { men:"رجالي", women:"نسائي" };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const getPerfumeImage = p => String(p?.image || p?.imageUrl || "").trim();
@@ -889,10 +893,12 @@ function renderOrders(){
 
 function renderPerfumes(){
   const q = ($("perfumeSearch").value || "").trim().toLowerCase();
+  const genderFilter = $("perfumeGenderFilter").value;
   const stock = $("perfumeStockFilter").value;
 
   const filtered = allPerfumes.filter(p => {
     if(activePerfumeCat !== "all" && p.category !== activePerfumeCat) return false;
+    if(genderFilter !== "all" && normalizeGenderValue(p.gender) !== genderFilter) return false;
     if(stock === "true" && !p.inStock) return false;
     if(stock === "false" && p.inStock) return false;
     if(q){
@@ -1019,6 +1025,7 @@ $("perfumeCatFilters").addEventListener("click", e => {
   renderPerfumes();
 });
 $("perfumeSearch").addEventListener("input", renderPerfumes);
+$("perfumeGenderFilter").addEventListener("change", renderPerfumes);
 $("perfumeStockFilter").addEventListener("change", renderPerfumes);
 
 $("perfumeForm").addEventListener("submit", async e => {
