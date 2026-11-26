@@ -52,11 +52,14 @@ header{display:flex;justify-content:space-between;align-items:center;padding:18p
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;transition:border-color .25s}
 .card:hover{border-color:var(--stone)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.notes-block{grid-column:1/-1;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px}
+.notes-title{margin:0 0 10px;font-size:13px;font-weight:600;color:var(--deep)}
 label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:13px}
 input,select,textarea{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit}
 input[type="file"]{padding:9px;background:var(--card);cursor:pointer}
 input[type="color"]{padding:4px;height:44px;cursor:pointer}
-button.btn{background:var(--deep);color:var(--bg);border:0;border-radius:999px;padding:11px 22px;font:inherit;font-size:14px;cursor:pointer;font-weight:500}
+button.btn{background:var(--deep);color:var(--bg);border:0;border-radius:999px;padding:10px 20px;font:inherit;font-size:14px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px}
 button.btn:disabled{opacity:.6;cursor:not-allowed}
 button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font:inherit;cursor:pointer;text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:5px}
 button.ghost:hover{background:var(--sand)}
@@ -90,6 +93,7 @@ button.danger{color:#9b2c2c;border-color:#e9c4c4}
 footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;border-top:1px solid var(--line)}
 
 @media (max-width:820px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:680px){.grid3{grid-template-columns:1fr}}
 @media (max-width:560px){
   header{padding:14px 16px}
   .logo{font-size:22px;letter-spacing:4px}
@@ -172,10 +176,14 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;bor
           <h2>إدارة العطور</h2>
           <p class="sub">إضافة وتعديل وتصفية عطور النيش والديزاينر والبدائل والبخور</p>
         </div>
+        <button class="btn" type="button" id="toggleAddFormBtn">+ إضافة عطر جديد</button>
       </div>
 
-      <div class="card">
-        <h3 style="margin:0 0 14px;font-size:17px" id="formTitle">إضافة عطر جديد</h3>
+      <div class="card hidden" id="perfumeFormCard">
+        <div class="row" style="margin-bottom:14px">
+          <h3 style="margin:0;font-size:17px" id="formTitle">إضافة عطر جديد</h3>
+          <button class="ghost" type="button" id="closeFormBtn">إغلاق ✕</button>
+        </div>
         <form id="perfumeForm" class="grid2">
           <label>اسم العطر<input name="name" required placeholder="مثال: Nuit Sable"></label>
           <label>الدار<input name="house" required placeholder="مثال: دار تجريبية أ"></label>
@@ -196,9 +204,22 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;bor
               <option value="false">لا (مخفي / نفد)</option>
             </select>
           </label>
-          <label>الإيحاءات والنفحات (افصل بين الثلاث بعلامة ·)
-            <input name="notes" placeholder="عنبر رمادي · بخور · باتشولي" required>
-          </label>
+
+          <div class="notes-block">
+            <div class="notes-title">الإيحاءات والنفحات (لكل طبقة مكانها)</div>
+            <div class="grid3">
+              <label>أعلى (المقدمة)
+                <input name="topNote" placeholder="مثال: عنبر رمادي" required>
+              </label>
+              <label>قلب العطر
+                <input name="heartNote" placeholder="مثال: بخور" required>
+              </label>
+              <label>قاعدة العطر
+                <input name="baseNote" placeholder="مثال: باتشولي" required>
+              </label>
+            </div>
+          </div>
+
           <label style="grid-column:1/-1">اختر صورة العطر من هاتفك (اختياري)
             <input id="photoInput" type="file" accept="image/*">
           </label>
@@ -259,7 +280,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;bor
         <p class="muted" style="margin:0;line-height:1.9">
           • أي عطر تجعله <b>غير متوفر</b> يتم إخفاؤه تلقائياً من واجهة المتجر دون حذفه من قاعدة البيانات.<br>
           • عند تحديث حالة الطلب إلى <b>ملغي</b> يتم استبعاده تلقائياً من إجمالي المبيعات في الإحصائيات.<br>
-          • يفضّل دائماً الفصل بين نفحات العطر الثلاث بعلامة النقطة الوسطى (<b>·</b>) لتظهر بدقة في الهرم العطري (أعلى، قلب، قاعدة).
+          • يتم ترتيب نفحات العطر تلقائياً لتظهر في الهرم العطري: <b>أعلى</b> ثم <b>قلب</b> ثم <b>قاعدة</b>.
         </p>
       </div>
     </div>
@@ -310,6 +331,26 @@ function showToast(text){
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
 }
+
+function setFormCardOpen(open){
+  $("perfumeFormCard").classList.toggle("hidden", !open);
+  $("toggleAddFormBtn").textContent = open ? "إخفاء نموذج الإضافة" : "+ إضافة عطر جديد";
+}
+
+$("toggleAddFormBtn").addEventListener("click", () => {
+  const isHidden = $("perfumeFormCard").classList.contains("hidden");
+  if(isHidden){
+    resetForm();
+    setFormCardOpen(true);
+  } else {
+    setFormCardOpen(false);
+  }
+});
+
+$("closeFormBtn").addEventListener("click", () => {
+  resetForm();
+  setFormCardOpen(false);
+});
 
 function setPhotoPreview(src, label){
   const clean = String(src || "").trim();
@@ -525,7 +566,7 @@ function renderPerfumes(){
     if(stock === "true" && !p.inStock) return false;
     if(stock === "false" && p.inStock) return false;
     if(q){
-      const hay = [p.name, p.house, p.size, p.notes, CATS[p.category]].join(" ").toLowerCase();
+      const hay = [p.name, p.house, p.size, p.notes, p.topNote, p.heartNote, p.baseNote, CATS[p.category]].join(" ").toLowerCase();
       if(!hay.includes(q)) return false;
     }
     return true;
@@ -537,6 +578,7 @@ function renderPerfumes(){
     const thumbHtml = imgUrl
       ? `<img class="perfume-thumb" src="${esc(imgUrl)}" alt="${esc(p.name)}" onerror="this.style.display='none'">`
       : "";
+    const notesDisplay = p.notes || [p.topNote, p.heartNote, p.baseNote].filter(Boolean).join(" · ");
 
     return `<div class="card row">
       <div style="display:flex;align-items:center;gap:12px">
@@ -545,7 +587,7 @@ function renderPerfumes(){
           <span class="color-dot" style="background:${esc(tone)}"></span>
           <b>${esc(p.name)}</b>
           <span class="muted">· ${esc(p.house)} · ${esc(p.size)}</span>
-          <div class="muted">${esc(CATS[p.category] || "")} · ${esc(p.notes)}</div>
+          <div class="muted">${esc(CATS[p.category] || "")} · ${esc(notesDisplay)}</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -631,6 +673,11 @@ $("perfumeForm").addEventListener("submit", async e => {
   const btn = $("savePerfumeBtn");
   btn.disabled = true;
   const f = new FormData(e.target);
+  const topNote = String(f.get("topNote") || "").trim();
+  const heartNote = String(f.get("heartNote") || "").trim();
+  const baseNote = String(f.get("baseNote") || "").trim();
+  const combinedNotes = [topNote, heartNote, baseNote].filter(Boolean).join(" · ");
+
   const data = {
     name: f.get("name").trim(),
     house: f.get("house").trim(),
@@ -639,7 +686,10 @@ $("perfumeForm").addEventListener("submit", async e => {
     category: f.get("category"),
     tone: f.get("tone") || "#b08a4f",
     inStock: f.get("inStock") === "true",
-    notes: f.get("notes").trim(),
+    topNote,
+    heartNote,
+    baseNote,
+    notes: combinedNotes,
     image: currentPhotoData,
     updatedAt: serverTimestamp()
   };
@@ -653,6 +703,7 @@ $("perfumeForm").addEventListener("submit", async e => {
       showToast("تمت إضافة العطر الجديد");
     }
     resetForm();
+    setFormCardOpen(false);
   } catch(err){
     console.error(err);
     alert("حدث خطأ أثناء حفظ العطر");
@@ -680,9 +731,14 @@ $("perfumeList").addEventListener("click", async e => {
     const p = window._perfumes?.[editId];
     if(!p) return;
     editingId = editId;
+    setFormCardOpen(true);
     $("formTitle").textContent = "تعديل العطر: " + (p.name || "");
     const form = $("perfumeForm");
-    ["name","house","size","price","category","notes"].forEach(k => form[k].value = p[k] ?? "");
+    ["name","house","size","price","category"].forEach(k => form[k].value = p[k] ?? "");
+    const parts = String(p.notes || "").split("·").map(s => s.trim());
+    form.topNote.value = p.topNote ?? parts[0] ?? "";
+    form.heartNote.value = p.heartNote ?? parts[1] ?? "";
+    form.baseNote.value = p.baseNote ?? parts[2] ?? "";
     form.tone.value = p.tone || "#b08a4f";
     form.inStock.value = String(!!p.inStock);
     $("photoInput").value = "";
@@ -706,7 +762,10 @@ $("perfumeList").addEventListener("click", async e => {
   if(delId && confirm("هل تريد حذف هذا العطر نهائياً؟")){
     try {
       await deleteDoc(doc(db, "perfumes", delId));
-      if(editingId === delId) resetForm();
+      if(editingId === delId){
+        resetForm();
+        setFormCardOpen(false);
+      }
       showToast("تم حذف العطر");
     } catch(err){
       console.error(err);
