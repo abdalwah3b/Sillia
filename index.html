@@ -8,51 +8,46 @@
 <title>Sillia - عطرك في كل أثر</title>
 <style>
 :root{--bg:#f7f2eb;--ink:#1f1915;--muted:#6b6055;--line:#e4dacb;--card:#fffdf9;--deep:#5e1c26;--sand:#efe4d4;--stone:#e0d3bf;--gold:#b08a4f}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#f7f2eb;--ink:#1f1915;--muted:#6b6055;--line:#e4dacb;--card:#fffdf9;--deep:#5e1c26;--sand:#efe4d4;--stone:#e0d3bf;--gold:#b08a4f}}
-:root[data-theme="dark"]{--bg:#f7f2eb;--ink:#1f1915;--muted:#6b6055;--line:#e4dacb;--card:#fffdf9;--deep:#5e1c26;--sand:#efe4d4;--stone:#e0d3bf;--gold:#b08a4f}
+:root[data-theme="dark"]{--bg:#15110f;--ink:#f2ebe0;--muted:#a09384;--line:#3a322c;--card:#201a17;--deep:#d6b67e;--sand:#1f1915;--stone:#2a221d;--gold:#d6b67e}
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic","Manrope",system-ui,sans-serif;line-height:1.7}
 .latin{font-family:"Bodoni Moda",Didot,serif}
-header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:10px}
 .logo{font-family:"Bodoni Moda",Didot,serif;font-size:28px;letter-spacing:7px;font-weight:700;color:var(--deep)}
 nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
-.hero{text-align:center;padding:72px 22px 56px;background:var(--sand);border-bottom:3px solid var(--gold)}
+.hero{text-align:center;padding:64px 22px 56px;background:radial-gradient(ellipse at 75% 40%,var(--card) 0%,var(--sand) 70%);border-bottom:3px solid var(--gold)}
 .hero h1{font-family:"Bodoni Moda",Didot,serif;font-weight:700;font-size:58px;margin:0 0 12px;letter-spacing:4px;color:var(--deep)}
 .hero p{color:var(--muted);margin:0 auto;max-width:460px}
 .hero .btn{display:inline-block;margin-top:26px;background:var(--deep);color:var(--bg);padding:12px 28px;border-radius:999px;text-decoration:none;font-size:15px}
 .section{max-width:1080px;margin:0 auto;padding:48px 22px}
 .section h2{font-size:20px;font-weight:500;margin:0 0 6px}
 .section .sub{color:var(--muted);font-size:14px;margin:0 0 24px}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
-.filters button{border:1px solid var(--line);background:transparent;color:var(--ink);padding:7px 16px;border-radius:999px;cursor:pointer;font:inherit;font-size:14px}
-.filters button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filters{display:flex;gap:24px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:32px;justify-content:flex-start}
+.filters button{background:none;border:0;border-radius:0;padding:10px 2px;color:var(--muted);font:inherit;font-size:15px;position:relative;cursor:pointer}
+.filters button:hover{color:var(--ink)}
+.filters button.on{background:none;color:var(--ink);font-weight:600}
+.filters button.on::after{content:"";position:absolute;right:0;left:0;bottom:-1px;height:2px;background:var(--gold)}
 .add{border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:5px 14px;font:inherit;font-size:13px;cursor:pointer}
 .add:hover{background:var(--ink);color:var(--bg)}
 .note{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center;color:var(--muted);margin-top:8px}
 
-.day{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
-.day::before{content:"";position:absolute;top:34px;right:6%;left:6%;height:1px;background:linear-gradient(90deg,var(--gold),var(--line),var(--gold))}
-@media (max-width:640px){.day{grid-template-columns:1fr;gap:26px}.day::before{display:none}}
-
-.day{display:block}
-.day::before{display:none}
-.tabbar{display:flex;gap:6px}
-.tab{border:0;background:transparent;color:var(--muted);font:inherit;font-size:14px;padding:8px 12px;border-radius:999px;cursor:pointer}
-.tab.on{background:var(--ink);color:var(--bg)}
+.day{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:30px 18px}
+.tabbar{display:flex;gap:0;border-bottom:0}
+.tab{border:0;background:transparent;color:var(--muted);font:inherit;font-size:15px;padding:10px 14px;margin:0;border-radius:0;cursor:pointer;position:relative;transition:background .4s ease,color .4s ease}
+.tab:hover{color:var(--ink)}
+.tab.on{background:none;color:var(--ink);font-weight:600}
+.tab.on::after{content:"";position:absolute;right:14px;left:14px;bottom:0;height:2px;background:var(--gold)}
 [data-tab].hidden{display:none}
-header{flex-wrap:wrap;gap:10px}
 
 .fx{transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1)}
 .fx.out{opacity:0;transform:translateY(14px)}
 .fxd{transition:opacity .4s ease,transform .4s cubic-bezier(.2,.7,.2,1)}
 .fxd.out{opacity:0;transform:translateY(10px)}
-.tab{transition:background .4s ease,color .4s ease}
 
-:root[data-theme="dark"]{--bg:#15110f;--ink:#f2ebe0;--muted:#a09384;--line:#3a322c;--card:#201a17;--deep:#d6b67e;--sand:#1f1915;--stone:#2a221d;--gold:#d6b67e}
 .hact{display:flex;gap:8px;align-items:center}
 .hact button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;font:inherit;font-size:13px}
-.badge{background:var(--deep);color:var(--bg);border-radius:999px;padding:0 7px;font-size:12px;margin-inside:4px}
+.badge{background:var(--deep);color:var(--bg);border-radius:999px;padding:0 7px;font-size:12px}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .4s ease;z-index:40}
 .overlay.on{opacity:1;pointer-events:auto}
 .sheet{position:fixed;top:0;bottom:0;right:0;width:min(400px,100%);background:var(--card);transform:translateX(105%);transition:transform .5s cubic-bezier(.2,.7,.2,1);z-index:50;display:flex;flex-direction:column;border-left:1px solid var(--line)}
@@ -61,21 +56,20 @@ header{flex-wrap:wrap;gap:10px}
 .x{border:0;background:transparent;color:var(--ink);font-size:22px;cursor:pointer}
 .sh-body{overflow:auto;padding:18px 20px;display:flex;flex-direction:column;gap:12px;flex:1}
 #cartList{flex:1;overflow:auto;padding:4px 20px}
-.ci{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
-.ci .ci-info{flex:1}
-.ci small{color:var(--muted);display:block}
-.qty{display:flex;align-items:center;gap:8px}
 .qty button,.rm{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
 .rm{border:0;color:var(--muted);font-size:18px}
 .sh-foot{padding:18px 20px;border-top:1px solid var(--line)}
 .totalrow{display:flex;justify-content:space-between;margin-bottom:12px;font-weight:600}
 .btn-full{width:100%;background:var(--deep);color:var(--bg);border:0;border-radius:999px;padding:13px;font:inherit;cursor:pointer;font-size:15px}
+.btn-full:disabled{opacity:.6;cursor:not-allowed}
 .sheet label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
 .sheet input,.sheet select{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
 .bankbox{display:none;font-size:13px;color:var(--muted);background:var(--sand);padding:12px;border-radius:10px}
 .bankbox.on{display:block}
 .mapbtn{border:1px solid var(--gold);background:transparent;color:var(--ink);border-radius:999px;padding:10px;font:inherit;cursor:pointer}
 .sum{font-size:15px;color:var(--deep);font-weight:600;min-height:20px}
+.err-txt{color:#9b2c2c;font-size:13px;min-height:18px}
+:root[data-theme="dark"] .err-txt{color:#f09595}
 .addbtn{margin-top:8px;align-self:flex-start}
 
 .ibtn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;padding:0;border-radius:50%}
@@ -87,19 +81,7 @@ header{flex-wrap:wrap;gap:10px}
 .hero-txt h1{text-align:right;margin-bottom:14px}
 .hero-txt .btn{margin-top:22px;margin-right:0}
 .hero-art{max-width:360px;margin:0 auto;filter:drop-shadow(0 22px 30px rgba(94,28,38,.18))}
-.hero{padding:64px 22px 56px;background:radial-gradient(ellipse at 75% 40%,var(--card) 0%,var(--sand) 70%)}
 @media (max-width:760px){.hero-grid{grid-template-columns:1fr;text-align:center}.hero-txt h1,.hero-txt p{text-align:center;margin-left:auto;margin-right:auto}.hero-txt .btn{margin:22px auto 0;display:inline-block}.hero-art{max-width:260px;order:-1}}
-
-.tabbar{gap:0;border-bottom:0}
-.tabbar .tab{background:none;border-radius:0;padding:10px 14px;margin:0;color:var(--muted);font-size:15px;position:relative}
-.tabbar .tab:hover{color:var(--ink)}
-.tabbar .tab.on{background:none;color:var(--ink);font-weight:600}
-.tabbar .tab.on::after{content:"";position:absolute;right:14px;left:14px;bottom:0;height:2px;background:var(--gold)}
-.filters{gap:24px;border-bottom:1px solid var(--line);margin-bottom:32px;justify-content:flex-start}
-.filters button{background:none;border:0;border-radius:0;padding:10px 2px;color:var(--muted);font-size:15px;position:relative}
-.filters button:hover{color:var(--ink)}
-.filters button.on{background:none;color:var(--ink);font-weight:600}
-.filters button.on::after{content:"";position:absolute;right:0;left:0;bottom:-1px;height:2px;background:var(--gold)}
 
 .pd-art{aspect-ratio:1/1;border-radius:24px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}
 .pd-art svg{width:46%;height:auto}
@@ -132,6 +114,7 @@ header{flex-wrap:wrap;gap:10px}
 .empty-cart svg{width:52px;height:52px;color:var(--gold);margin-bottom:12px}
 .empty-cart p{color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:22px;margin:0 0 6px}
 .empty-cart small{font-size:13px}
+#cartList .qty{display:flex;align-items:center;gap:8px}
 #cartList .qty span{min-width:18px;text-align:center}
 
 .fgroup{display:flex;flex-direction:column;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--line)}
@@ -160,7 +143,6 @@ header{flex-wrap:wrap;gap:10px}
 .done>*{flex-shrink:0}
 .done .ok{flex:0 0 76px;height:76px;min-height:76px}
 
-.day{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:26px 14px}
 @media (max-width:560px){
   header{padding:14px 16px;justify-content:space-between}
   .logo{font-size:22px;letter-spacing:5px}
@@ -187,8 +169,7 @@ header{flex-wrap:wrap;gap:10px}
 :root[data-theme="dark"] .kicker,:root[data-theme="dark"] .hero-txt .kicker{color:#d6b67e}
 footer{text-align:center;color:var(--muted);font-size:13px;padding:32px 22px;border-top:1px solid var(--line)}
 
-.day{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:30px 18px}
-.card{display:flex;flex-direction:column;gap:8px}
+.card{display:flex;flex-direction:column;gap:8px;cursor:pointer}
 .sq{aspect-ratio:1/1;border-radius:18px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);transition:transform .25s}
 .card:hover .sq{transform:translateY(-4px)}
 .sq svg{width:58%;height:auto}
@@ -306,7 +287,8 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:32px 22px;bor
       <div class="bankbox" id="bankBox">سيتم إرسال بيانات الحساب المصرفي بعد تأكيد الطلب.</div>
     </div>
     <div class="sumcard"><div class="sum" id="sumBox"></div></div>
-    <button class="btn-full" type="submit">تأكيد الطلب</button>
+    <div class="err-txt" id="orderErr"></div>
+    <button class="btn-full" type="submit" id="submitOrderBtn">تأكيد الطلب</button>
   </form>
   <div class="sh-body done" id="doneBox" hidden></div>
 </aside>
@@ -316,36 +298,57 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:32px 22px;bor
   <div class="sh-body" id="prodBody"></div>
 </aside>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDdICo-EAFaCJ9mvd7gT7wjKkyXCR4S2f4",
+  authDomain: "sillia-aa319.firebaseapp.com",
+  projectId: "sillia-aa319",
+  storageBucket: "sillia-aa319.firebasestorage.app",
+  messagingSenderId: "646622417573",
+  appId: "1:646622417573:web:2937ded7d2d22bdd7bf34c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const categories = {
   niche:{label:"نيش", title:"عطور النيش", desc:"دور صغيرة ومستقلة تركّز على المكونات النادرة والتركيبات الفنية، وتنتج كميات محدودة. تتميز بطابع شخصي وغير مكرر، وغالباً سعرها أعلى من غيرها."},
   designer:{label:"ديزاينر", title:"عطور الديزاينر", desc:"عطور من دور أزياء وعلامات فاخرة معروفة عالمياً. تكون متوفرة في أغلب المتاجر، وتتميز بتركيبات مألوفة ومجرّبة تناسب الذوق العام."},
   alt:{label:"بدائل", title:"البدائل", desc:"عطور تشبه في نفحتها عطوراً مشهورة بسعر أقل. لا تحمل أسماء العلامات الأصلية، وهي خيار عملي لمن يحب النفحة ولا يريد دفع السعر الكامل."},
   bakhoor:{label:"بخور", title:"البخور", desc:"مواد عطرية طبيعية تُحرق على الفحم لتعطير المكان والملابس، بدلاً من الرش على الجلد. تُستعمل في البيوت والمجالس، وتترك أثراً دافئاً يبقى لساعات."}
 };
-const items = [
-  {cat:"niche", house:"دار تجريبية أ", name:"Nuit Sable", size:"100 مل", price:260, tone:"#6e5a4a", notes:"عنبر رمادي · بخور · باتشولي"},
-  {cat:"niche", house:"دار تجريبية ب", name:"Oud Lumière", size:"100 مل", price:310, tone:"#9c7a52", notes:"عود · زعفران · جلد"},
-  {cat:"niche", house:"دار تجريبية ج", name:"Rose Pâle", size:"50 مل", price:200, tone:"#e4b8a8", notes:"ورد دمشقي · لوز · خوخ"},
-  {cat:"designer", house:"دار تجريبية د", name:"Ambre Soie", size:"100 مل", price:240, tone:"#d6a46a", notes:"عنبر · فانيليا · توابل خفيفة"},
-  {cat:"designer", house:"دار تجريبية هـ", name:"Aube Dorée", size:"50 مل", price:190, tone:"#e8c9a0", notes:"ليمون · زهر البرتقال · مسك أبيض"},
-  {cat:"designer", house:"دار تجريبية و", name:"Cèdre Doux", size:"75 مل", price:210, tone:"#a8917a", notes:"أرز · فيتيفر · مسك"},
-  {cat:"alt", house:"بديل", name:"Vert Matin", size:"75 مل", price:120, tone:"#b9c9a8", notes:"ورق التين · خضرة · صنوبر"},
-  {cat:"alt", house:"بديل", name:"Velvet Oud", size:"100 مل", price:110, tone:"#b08a4f", notes:"عود · فانيليا · توابل"},
-  {cat:"alt", house:"بديل", name:"Sable Musk", size:"50 مل", price:90, tone:"#d9c7ad", notes:"مسك · صندل · خشب ناعم"},
-  {cat:"bakhoor", house:"بخور", name:"Bakhoor Sahara", size:"50 غرام", price:120, tone:"#7a5a3c", notes:"عود · لبان · ورد مجفف"},
-  {cat:"bakhoor", house:"بخور", name:"Bakhoor Médina", size:"50 غرام", price:140, tone:"#8c6a4c", notes:"عنبر · صندل · مسك"}
+
+const fallbackItems = [
+  {cat:"niche", house:"دار تجريبية أ", name:"Nuit Sable", size:"100 مل", price:260, tone:"#6e5a4a", notes:"عنبر رمادي · بخور · باتشولي", inStock:true},
+  {cat:"niche", house:"دار تجريبية ب", name:"Oud Lumière", size:"100 مل", price:310, tone:"#9c7a52", notes:"عود · زعفران · جلد", inStock:true},
+  {cat:"niche", house:"دار تجريبية ج", name:"Rose Pâle", size:"50 مل", price:200, tone:"#e4b8a8", notes:"ورد دمشقي · لوز · خوخ", inStock:true},
+  {cat:"designer", house:"دار تجريبية د", name:"Ambre Soie", size:"100 مل", price:240, tone:"#d6a46a", notes:"عنبر · فانيليا · توابل خفيفة", inStock:true},
+  {cat:"designer", house:"دار تجريبية هـ", name:"Aube Dorée", size:"50 مل", price:190, tone:"#e8c9a0", notes:"ليمون · زهر البرتقال · مسك أبيض", inStock:true},
+  {cat:"designer", house:"دار تجريبية و", name:"Cèdre Doux", size:"75 مل", price:210, tone:"#a8917a", notes:"أرز · فيتيفر · مسك", inStock:true},
+  {cat:"alt", house:"بديل", name:"Vert Matin", size:"75 مل", price:120, tone:"#b9c9a8", notes:"ورق التين · خضرة · صنوبر", inStock:true},
+  {cat:"alt", house:"بديل", name:"Velvet Oud", size:"100 مل", price:110, tone:"#b08a4f", notes:"عود · فانيليا · توابل", inStock:true},
+  {cat:"alt", house:"بديل", name:"Sable Musk", size:"50 مل", price:90, tone:"#d9c7ad", notes:"مسك · صندل · خشب ناعم", inStock:true},
+  {cat:"bakhoor", house:"بخور", name:"Bakhoor Sahara", size:"50 غرام", price:120, tone:"#7a5a3c", notes:"عود · لبان · ورد مجفف", inStock:true},
+  {cat:"bakhoor", house:"بخور", name:"Bakhoor Médina", size:"50 غرام", price:140, tone:"#8c6a4c", notes:"عنبر · صندل · مسك", inStock:true}
 ];
+
+let items = [...fallbackItems];
 let activeCat = "niche";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 function bottle(c,k){
+  const safeTone = /^#[0-9a-fA-F]{3,8}$/.test(c || "") ? c : "#b08a4f";
   const id = "bt" + k;
   return `<svg viewBox="0 0 160 200" width="90" height="112" aria-hidden="true">
     <defs>
       <linearGradient id="${id}g" x1="0" x2="1">
-        <stop offset="0" stop-color="${c}" stop-opacity=".55"/>
-        <stop offset=".4" stop-color="${c}"/>
-        <stop offset="1" stop-color="${c}" stop-opacity=".8"/>
+        <stop offset="0" stop-color="${safeTone}" stop-opacity=".55"/>
+        <stop offset=".4" stop-color="${safeTone}"/>
+        <stop offset="1" stop-color="${safeTone}" stop-opacity=".8"/>
       </linearGradient>
       <linearGradient id="${id}c" x1="0" x2="1">
         <stop offset="0" stop-color="#9c7535"/>
@@ -363,40 +366,90 @@ function bottle(c,k){
     <line x1="62" y1="130" x2="98" y2="130" stroke="#b08a4f" stroke-width=".8"/>
   </svg>`;
 }
+
 function renderTabs(){
-  document.getElementById("tabs").innerHTML = Object.keys(categories).map(k =>
-    `<button class="${k===activeCat?'on':''}" data-c="${k}">${categories[k].label}</button>`).join("");
+  $("tabs").innerHTML = Object.keys(categories).map(k =>
+    `<button class="${k===activeCat?'on':''}" data-c="${k}">${esc(categories[k].label)}</button>`).join("");
 }
+
 function renderCat(){
   const c = categories[activeCat];
-  document.getElementById("catinfo").innerHTML = `<b style="display:block;margin-bottom:4px;color:var(--ink)">${c.title}</b>${c.desc}`;
-  const list = items.filter(i => i.cat===activeCat);
-  document.getElementById("day").innerHTML = list.map((i,k) => `
-    <article class="card">
-      <div class="sq" style="background:linear-gradient(160deg,${i.tone}66,${i.tone}22)">${bottle(i.tone,k)}</div>
-      <div class="ln"><b>${i.name}</b><span class="side">${i.price} د.ل</span></div>
-      <small>${i.notes}</small>
-      <button class="add addbtn" data-add="${i.name}">أضف للسلة</button>
-    </article>`).join("");
+  $("catinfo").innerHTML = `<b style="display:block;margin-bottom:4px;color:var(--ink)">${esc(c.title)}</b>${esc(c.desc)}`;
+  const list = items.filter(i => i.cat === activeCat && i.inStock !== false);
+  $("day").innerHTML = list.length ? list.map((i,k) => {
+    const tone = i.tone || "#b08a4f";
+    return `<article class="card">
+      <div class="sq" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${bottle(tone,k)}</div>
+      <div class="ln"><b>${esc(i.name)}</b><span class="side">${esc(i.price)} د.ل</span></div>
+      <small>${esc(i.notes)}</small>
+      <button class="add addbtn" data-add="${esc(i.name)}">أضف للسلة</button>
+    </article>`;
+  }).join("") : '<div class="note" style="grid-column:1/-1">لا توجد عطور متوفرة حالياً في هذا القسم.</div>';
 }
-document.getElementById("tabs").addEventListener("click", e => {
-  if(e.target.dataset.c && e.target.dataset.c !== activeCat){
-    const dayEl = document.getElementById("day"), infoEl = document.getElementById("catinfo");
+
+function renderFeatured(){
+  const available = items.filter(i => i.inStock !== false);
+  const featuredNames = ["Nuit Sable","Ambre Soie","Bakhoor Sahara"];
+  let chosen = available.filter(i => featuredNames.includes(i.name));
+  if(!chosen.length) chosen = available.slice(0, 3);
+  $("fday").innerHTML = chosen.map((i,k) => {
+    const tone = i.tone || "#b08a4f";
+    return `<article class="card">
+      <div class="sq" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${bottle(tone,"f"+k)}</div>
+      <div class="ln"><b>${esc(i.name)}</b><span class="side">${esc(i.price)} د.ل</span></div>
+      <small>${esc(i.notes)}</small>
+      <button class="add addbtn" data-add="${esc(i.name)}">أضف للسلة</button>
+    </article>`;
+  }).join("");
+}
+
+$("tabs").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-c]");
+  if(btn && btn.dataset.c !== activeCat){
+    const dayEl = $("day"), infoEl = $("catinfo");
     dayEl.classList.add('out'); infoEl.classList.add('out');
     setTimeout(() => {
-      activeCat = e.target.dataset.c; renderTabs(); renderCat();
+      activeCat = btn.dataset.c; renderTabs(); renderCat();
       requestAnimationFrame(() => requestAnimationFrame(() => {
         dayEl.classList.remove('out'); infoEl.classList.remove('out');
       }));
     }, 300);
   }
 });
-renderTabs(); renderCat();
+
+renderTabs();
+renderCat();
+renderFeatured();
+
+// مزامنة العطور من Firestore إن وُجدت
+onSnapshot(query(collection(db, "perfumes")), snap => {
+  if(!snap.empty){
+    items = snap.docs.map(d => {
+      const data = d.data();
+      return {
+        id: d.id,
+        cat: data.category || data.cat || "niche",
+        house: data.house || "Sillia",
+        name: data.name || "",
+        size: data.size || "100 مل",
+        price: Number(data.price) || 0,
+        tone: data.tone || "#b08a4f",
+        notes: data.notes || "",
+        inStock: data.inStock !== false
+      };
+    });
+    renderCat();
+    renderFeatured();
+    renderCart();
+  }
+}, err => {
+  console.warn("تعذر قراءة عطور Firestore، يتم استخدام القائمة الافتراضية:", err);
+});
 
 let currentTab = "home", busy = false;
 document.querySelectorAll('[data-tab]').forEach(el => el.classList.add('fx'));
-document.getElementById("day").classList.add('fxd');
-document.getElementById("catinfo").classList.add('fxd');
+$("day").classList.add('fxd');
+$("catinfo").classList.add('fxd');
 
 function setTabButtons(t){
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.t === t));
@@ -420,60 +473,53 @@ function showTab(t){
   }, 400);
 }
 document.querySelector('.tabbar').addEventListener('click', e => {
-  if(e.target.dataset.t) showTab(e.target.dataset.t);
+  const btn = e.target.closest('.tab[data-t]');
+  if(btn) showTab(btn.dataset.t);
 });
 document.querySelectorAll('[data-go]').forEach(a => a.addEventListener('click', e => {
   e.preventDefault(); showTab(a.dataset.go);
 }));
-// initial state
 document.querySelectorAll('[data-tab]').forEach(el => {
   if(el.dataset.tab !== currentTab) el.classList.add('hidden');
 });
 
-const featuredNames = ["Nuit Sable","Ambre Soie","Bakhoor Sahara"];
-document.getElementById("fday").innerHTML = items.filter(i => featuredNames.includes(i.name)).map((i,k) => `
-    <article class="card">
-      <div class="sq" style="background:linear-gradient(160deg,${i.tone}66,${i.tone}22)">${bottle(i.tone,"f"+k)}</div>
-      <div class="ln"><b>${i.name}</b><span class="side">${i.price} د.ل</span></div>
-      <small>${i.notes}</small>
-      <button class="add addbtn" data-add="${i.name}">أضف للسلة</button>
-    </article>`).join("");
-
 const cities = ["طرابلس","بنغازي","مصراتة","سبها","البيضاء","الزاوية","زليتن","سرت","طبرق","الخمس","غريان","درنة","أجدابيا","ترهونة","صبراتة","زوارة","يفرن"];
-document.getElementById("citySel").innerHTML = '<option value="">اختر المدينة</option>' + cities.map(c => `<option>${c}</option>`).join("");
+$("citySel").innerHTML = '<option value="">اختر المدينة</option>' + cities.map(c => `<option>${esc(c)}</option>`).join("");
 
 const cart = {};
-const $ = id => document.getElementById(id);
-const priceOf = n => items.find(i => i.name === n).price;
+const priceOf = n => (items.find(i => i.name === n)?.price) || 0;
 function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
 function cartTotal(){ return Object.keys(cart).reduce((t,n)=> t + priceOf(n)*cart[n], 0); }
+
 function renderCart(){
   const names = Object.keys(cart).filter(n => cart[n] > 0);
   const bagIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>';
   $("cartList").innerHTML = names.length ? names.map((n,k) => {
-    const it = items.find(x => x.name === n);
+    const it = items.find(x => x.name === n) || { price: priceOf(n), tone: "#b08a4f" };
+    const tone = it.tone || "#b08a4f";
     return `<div class="ci">
-      <div class="ci-thumb" style="background:linear-gradient(160deg,${it.tone}66,${it.tone}22)">${bottle(it.tone,"c"+k)}</div>
+      <div class="ci-thumb" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${bottle(tone,"c"+k)}</div>
       <div class="ci-info">
-        <b>${n}</b>
-        <small>${it.price} د.ل للقطعة</small>
-        <div class="qty"><button data-dec="${n}">−</button><span>${cart[n]}</span><button data-inc="${n}">+</button></div>
+        <b>${esc(n)}</b>
+        <small>${esc(it.price)} د.ل للقطعة</small>
+        <div class="qty"><button data-dec="${esc(n)}">−</button><span>${esc(cart[n])}</span><button data-inc="${esc(n)}">+</button></div>
       </div>
       <div class="ci-end">
-        <span class="ci-sub">${it.price * cart[n]} د.ل</span>
-        <button class="rm" data-rm="${n}" title="حذف">×</button>
+        <span class="ci-sub">${esc(it.price * cart[n])} د.ل</span>
+        <button class="rm" data-rm="${esc(n)}" title="حذف">×</button>
       </div>
     </div>`;
   }).join("") : `<div class="empty-cart">${bagIcon}<p>سلتك فارغة</p><small>أضف عطرك المفضل ليظهر هنا</small></div>`;
   $("cartTotal").textContent = cartTotal() + " د.ل";
   $("cartBadge").textContent = cartCount();
 }
+
 function addToCart(n){ cart[n] = (cart[n]||0) + 1; renderCart(); }
 document.addEventListener("click", e => {
-  const add = e.target.dataset.add; if(add){ addToCart(add); return; }
-  const inc = e.target.dataset.inc; if(inc){ cart[inc]++; renderCart(); return; }
-  const dec = e.target.dataset.dec; if(dec){ cart[dec] = Math.max(0, cart[dec]-1); if(!cart[dec]) delete cart[dec]; renderCart(); return; }
-  const rm = e.target.dataset.rm; if(rm){ delete cart[rm]; renderCart(); return; }
+  const addBtn = e.target.closest("[data-add]"); if(addBtn){ addToCart(addBtn.dataset.add); return; }
+  const incBtn = e.target.closest("[data-inc]"); if(incBtn){ cart[incBtn.dataset.inc]++; renderCart(); return; }
+  const decBtn = e.target.closest("[data-dec]"); if(decBtn){ const k = decBtn.dataset.dec; cart[k] = Math.max(0, cart[k]-1); if(!cart[k]) delete cart[k]; renderCart(); return; }
+  const rmBtn = e.target.closest("[data-rm]"); if(rmBtn){ delete cart[rmBtn.dataset.rm]; renderCart(); return; }
 });
 
 function openSheet(id){ $("ov").classList.add("on"); $(id).classList.add("on"); }
@@ -483,6 +529,7 @@ document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click
 $("cartBtn").addEventListener("click", () => { renderCart(); openSheet("cartSheet"); });
 $("toCheckout").addEventListener("click", () => {
   if(!cartCount()){ return; }
+  $("orderErr").textContent = "";
   $("sumBox").textContent = "المجموع: " + cartTotal() + " د.ل";
   closeAll(); openSheet("checkSheet");
 });
@@ -500,57 +547,115 @@ $("openMap").addEventListener("click", () => {
   window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q), "_blank", "noopener");
 });
 
-$("orderForm").addEventListener("submit", e => {
+$("orderForm").addEventListener("submit", async e => {
   e.preventDefault();
+  $("orderErr").textContent = "";
+  const orderItems = Object.keys(cart).filter(n => cart[n] > 0).map(n => {
+    const it = items.find(x => x.name === n) || {};
+    return {
+      name: n,
+      qty: cart[n],
+      price: Number(it.price) || 0,
+      size: it.size || ""
+    };
+  });
+  if(!orderItems.length){
+    $("orderErr").textContent = "السلة فارغة، أضف عطراً قبل إتمام الطلب.";
+    return;
+  }
+
+  const btn = $("submitOrderBtn");
+  btn.disabled = true;
+  btn.textContent = "جاري إرسال الطلب...";
+
   const f = new FormData(e.target);
-  const pay = f.get("pay") === "bank" ? "تحويل مصرفي" : "كاش عند الاستلام";
+  const payVal = f.get("pay") === "bank" ? "bank" : "cash";
+  const payLabel = payVal === "bank" ? "تحويل مصرفي" : "كاش عند الاستلام";
   const ref = "SIL-" + Date.now().toString(36).toUpperCase().slice(-6);
   const total = cartTotal(), count = cartCount();
-  $("doneBox").innerHTML = `
-    <div class="ok"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-    <div>
-      <b class="done-title">شكراً لطلبك</b>
-      <p class="done-p">تم استلام طلبك، وسنتواصل معك لتأكيد التوصيل.</p>
-    </div>
-    <div class="refbox"><small>رقم الطلب المرجعي</small><b>${ref}</b></div>
-    <div class="done-list">
-      <div>عدد القطع: <b>${count}</b></div>
-      <div>المجموع: <b>${total} د.ل</b></div>
-      <div>المدينة: <b>${f.get("city")}</b></div>
-      <div>طريقة الدفع: <b>${pay}</b></div>
-      <div>رقم التواصل: <b>${f.get("phone")}</b></div>
-    </div>
-    <button class="btn-full" id="doneClose">العودة للتسوق</button>`;
-  e.target.hidden = true;
-  $("doneBox").hidden = false;
-  $("doneClose").addEventListener("click", () => {
-    $("doneBox").hidden = true; e.target.hidden = false; closeAll();
-  });
-  Object.keys(cart).forEach(k => delete cart[k]);
-  renderCart();
+  const city = f.get("city");
+  const phone = f.get("phone").trim();
+
+  const orderDoc = {
+    ref,
+    status: "new",
+    payment: payVal,
+    total,
+    count,
+    items: orderItems,
+    customer: {
+      name: f.get("name").trim(),
+      phone,
+      city,
+      address: f.get("addr").trim(),
+      mapUrl: (f.get("map") || "").trim()
+    },
+    createdAt: serverTimestamp()
+  };
+
+  try {
+    await addDoc(collection(db, "orders"), orderDoc);
+
+    $("doneBox").innerHTML = `
+      <div class="ok"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <div>
+        <b class="done-title">شكراً لطلبك</b>
+        <p class="done-p">تم استلام طلبك، وسنتواصل معك لتأكيد التوصيل.</p>
+      </div>
+      <div class="refbox"><small>رقم الطلب المرجعي</small><b>${esc(ref)}</b></div>
+      <div class="done-list">
+        <div>عدد القطع: <b>${esc(count)}</b></div>
+        <div>المجموع: <b>${esc(total)} د.ل</b></div>
+        <div>المدينة: <b>${esc(city)}</b></div>
+        <div>طريقة الدفع: <b>${esc(payLabel)}</b></div>
+        <div>رقم التواصل: <b>${esc(phone)}</b></div>
+      </div>
+      <button class="btn-full" id="doneClose">العودة للتسوق</button>`;
+    e.target.hidden = true;
+    $("doneBox").hidden = false;
+    $("doneClose").addEventListener("click", () => {
+      $("doneBox").hidden = true; e.target.hidden = false; e.target.reset(); closeAll();
+    });
+    Object.keys(cart).forEach(k => delete cart[k]);
+    renderCart();
+  } catch(err){
+    console.error(err);
+    $("orderErr").textContent = "تعذر حفظ الطلب في قاعدة البيانات، تحقق من اتصال الإنترنت أو قواعد Firestore.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "تأكيد الطلب";
+  }
 });
 
+function applyStoreTheme(dark){
+  document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  try { localStorage.setItem("sillia_store_theme", dark ? "dark" : "light"); } catch(e){}
+  $("themeBtn").innerHTML = dark
+    ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>`
+    : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>`;
+  $("themeBtn").setAttribute("aria-label", dark ? "الوضع النهاري" : "الوضع الليلي");
+}
+const savedStoreDark = (() => { try { return localStorage.getItem("sillia_store_theme") === "dark"; } catch(e){ return false; } })();
+applyStoreTheme(savedStoreDark);
 $("themeBtn").addEventListener("click", () => {
-  const html = document.documentElement;
-  const dark = html.getAttribute("data-theme") === "dark";
-  html.setAttribute("data-theme", dark ? "light" : "dark");
-  $("themeBtn").innerHTML = dark ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>` : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>`;
-  $("themeBtn").setAttribute("aria-label", dark ? "الوضع الليلي" : "الوضع النهاري");
+  applyStoreTheme(document.documentElement.getAttribute("data-theme") !== "dark");
 });
+
 renderCart();
 
 function openProduct(name){
   const i = items.find(x => x.name === name); if(!i) return;
-  const n = i.notes.split("·").map(t => t.trim());
+  const n = String(i.notes || "").split("·").map(t => t.trim());
+  const tone = i.tone || "#b08a4f";
   $("prodBody").innerHTML = `
-    <div class="pd-art" style="background:linear-gradient(160deg,${i.tone}66,${i.tone}22)">${bottle(i.tone,"p")}</div>
-    <div class="pd-house">${i.house}</div>
-    <h2 class="pd-name">${i.name}</h2>
-    <div class="pd-meta">${i.size} · ${i.price} د.ل</div>
+    <div class="pd-art" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${bottle(tone,"p")}</div>
+    <div class="pd-house">${esc(i.house)}</div>
+    <h2 class="pd-name">${esc(i.name)}</h2>
+    <div class="pd-meta">${esc(i.size)} · ${esc(i.price)} د.ل</div>
     <div class="pd-ladder">
-      <div><span>أعلى</span><b>${n[0] || "—"}</b></div>
-      <div><span>قلب</span><b>${n[1] || "—"}</b></div>
-      <div><span>قاعدة</span><b>${n[2] || "—"}</b></div>
+      <div><span>أعلى</span><b>${esc(n[0] || "—")}</b></div>
+      <div><span>قلب</span><b>${esc(n[1] || "—")}</b></div>
+      <div><span>قاعدة</span><b>${esc(n[2] || "—")}</b></div>
     </div>
     <button class="btn-full" id="pdAdd">أضف إلى السلة</button>`;
   $("pdAdd").addEventListener("click", () => { addToCart(i.name); closeAll(); });
