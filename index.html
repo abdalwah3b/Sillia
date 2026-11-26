@@ -60,12 +60,20 @@ nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
 .rm{border:0;color:var(--muted);font-size:18px}
 .sh-foot{padding:18px 20px;border-top:1px solid var(--line)}
 .totalrow{display:flex;justify-content:space-between;margin-bottom:12px;font-weight:600}
-.btn-full{width:100%;background:var(--deep);color:var(--bg);border:0;border-radius:999px;padding:13px;font:inherit;cursor:pointer;font-size:15px}
+.btn-full{width:100%;background:var(--deep);color:var(--bg);border:0;border-radius:999px;padding:13px;font:inherit;cursor:pointer;font-size:15px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:500}
 .btn-full:disabled{opacity:.6;cursor:not-allowed}
+.btn-wa{background:#1f7a4c;color:#fff}
+.btn-wa:hover{opacity:.94}
+.btn-ghost-full{width:100%;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:12px;font:inherit;cursor:pointer;font-size:14px}
+.btn-ghost-full:hover{background:var(--sand)}
 .sheet label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
 .sheet input,.sheet select{padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
-.bankbox{display:none;font-size:13px;color:var(--muted);background:var(--sand);padding:12px;border-radius:10px}
+.bankbox{display:none;font-size:13px;color:var(--ink);background:var(--sand);padding:14px;border-radius:12px;border:1px solid var(--line);text-align:right;line-height:1.85}
 .bankbox.on{display:block}
+.bank-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.bank-val{font-family:"Manrope",monospace;font-size:13px;direction:ltr;user-select:all;word-break:break-all}
+.copy-mini{border:1px solid var(--gold);background:var(--card);color:var(--ink);border-radius:999px;padding:3px 10px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
+.copy-mini:hover{background:var(--gold);color:var(--bg)}
 .mapbtn{border:1px solid var(--gold);background:transparent;color:var(--ink);border-radius:999px;padding:10px;font:inherit;cursor:pointer}
 .sum{font-size:15px;color:var(--deep);font-weight:600;min-height:20px}
 .err-txt{color:#9b2c2c;font-size:13px;min-height:18px}
@@ -131,19 +139,20 @@ nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
 .sumcard{background:var(--sand);border-radius:14px;padding:14px 16px}
 .sumcard .sum{font-size:15px}
 
-.done{align-items:center;text-align:center;justify-content:center;gap:16px}
+.done{align-items:center;text-align:center;justify-content:flex-start;gap:14px}
 .done[hidden]{display:none}
-.done .ok{width:76px;height:76px;border-radius:50%;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--deep)}
-.done-title{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:26px;font-weight:500;display:block}
-.done-p{color:var(--muted);font-size:14px;margin:6px 0 0}
-.refbox{background:var(--sand);border-radius:14px;padding:14px 18px;width:100%}
+.done .ok{width:68px;height:68px;border-radius:50%;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--deep)}
+.done-title{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:24px;font-weight:500;display:block}
+.done-p{color:var(--muted);font-size:14px;margin:4px 0 0}
+.refbox{background:var(--sand);border-radius:14px;padding:12px 16px;width:100%}
 .refbox small{color:var(--muted);font-size:12px}
-.refbox b{display:block;font-family:"Bodoni Moda",Didot,serif;font-size:20px;letter-spacing:2px;color:var(--deep);margin-top:4px}
-.done-list{width:100%;text-align:right;font-size:14px;color:var(--muted);line-height:2}
+.refbox b{display:block;font-family:"Bodoni Moda",Didot,serif;font-size:20px;letter-spacing:2px;color:var(--deep);margin-top:2px}
+.done-list{width:100%;text-align:right;font-size:14px;color:var(--muted);line-height:1.95}
 .done-list b{color:var(--ink);font-weight:600}
+.done-bank{width:100%;background:var(--sand);border:1px solid var(--gold);border-radius:14px;padding:12px 14px;text-align:right;font-size:13px}
 
 .done>*{flex-shrink:0}
-.done .ok{flex:0 0 76px;height:76px;min-height:76px}
+.done .ok{flex:0 0 68px;height:68px;min-height:68px}
 
 @media (max-width:560px){
   header{padding:14px 16px;justify-content:space-between}
@@ -285,9 +294,21 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:32px 22px;bor
       <div class="flabel">طريقة الدفع</div>
       <div class="paygrid">
         <label class="paycard"><input type="radio" name="pay" value="cash" checked><span class="pc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v4M18 10v4"/></svg></span><span class="pc-t"><b>كاش</b><small>عند الاستلام</small></span></label>
-        <label class="paycard"><input type="radio" name="pay" value="bank"><span class="pc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5H3z"/><path d="M3 18h18M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/></svg></span><span class="pc-t"><b>تحويل مصرفي</b><small>بيانات الحساب بعد التأكيد</small></span></label>
+        <label class="paycard"><input type="radio" name="pay" value="bank"><span class="pc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5H3z"/><path d="M3 18h18M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/></svg></span><span class="pc-t"><b>تحويل مصرفي</b><small>مصرف الوحدة</small></span></label>
       </div>
-      <div class="bankbox" id="bankBox">سيتم إرسال بيانات الحساب المصرفي بعد تأكيد الطلب.</div>
+      <div class="bankbox" id="bankBox">
+        <div><b>بيانات التحويل المصرفي:</b></div>
+        <div>المصرف: <b>مصرف الوحدة</b></div>
+        <div class="bank-row">
+          <span>رقم الحساب: <b class="bank-val">082022656800014</b></span>
+          <button type="button" class="copy-mini" data-copy="082022656800014">نسخ</button>
+        </div>
+        <div class="bank-row">
+          <span>IBAN: <b class="bank-val">LY13005082082022656800014</b></span>
+          <button type="button" class="copy-mini" data-copy="LY13005082082022656800014">نسخ</button>
+        </div>
+        <div style="margin-top:8px;color:var(--muted);font-size:12px">بعد تأكيد الطلب يمكنك إرسال إيصال التحويل مباشرة عبر واتساب الأعمال.</div>
+      </div>
     </div>
     <div class="sumcard"><div class="sum" id="sumBox"></div></div>
     <div class="err-txt" id="orderErr"></div>
@@ -312,6 +333,13 @@ const firebaseConfig = {
   storageBucket: "sillia-aa319.firebasestorage.app",
   messagingSenderId: "646622417573",
   appId: "1:646622417573:web:2937ded7d2d22bdd7bf34c"
+};
+
+const WHATSAPP_NUMBER = "218935080063";
+const BANK_INFO = {
+  bankName: "مصرف الوحدة",
+  accountNumber: "082022656800014",
+  iban: "LY13005082082022656800014"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -420,6 +448,7 @@ renderFeatured();
 onSnapshot(query(collection(db, "perfumes")), snap => {
   items = snap.docs.map(d => {
     const data = d.data();
+    const fallbackNotes = [data.topNote, data.heartNote, data.baseNote].filter(Boolean).join(" · ");
     return {
       id: d.id,
       cat: data.category || data.cat || "niche",
@@ -429,7 +458,10 @@ onSnapshot(query(collection(db, "perfumes")), snap => {
       price: Number(data.price) || 0,
       tone: data.tone || "#b08a4f",
       image: String(data.image || data.imageUrl || "").trim(),
-      notes: data.notes || "",
+      notes: data.notes || fallbackNotes,
+      topNote: data.topNote || "",
+      heartNote: data.heartNote || "",
+      baseNote: data.baseNote || "",
       inStock: data.inStock !== false
     };
   });
@@ -510,6 +542,16 @@ function renderCart(){
 
 function addToCart(n){ cart[n] = (cart[n]||0) + 1; renderCart(); }
 document.addEventListener("click", e => {
+  const copyBtn = e.target.closest("[data-copy]");
+  if(copyBtn){
+    const txt = copyBtn.dataset.copy;
+    navigator.clipboard?.writeText(txt).then(() => {
+      const old = copyBtn.textContent;
+      copyBtn.textContent = "تم النسخ ✓";
+      setTimeout(() => { copyBtn.textContent = old; }, 1600);
+    }).catch(() => {});
+    return;
+  }
   const addBtn = e.target.closest("[data-add]"); if(addBtn){ addToCart(addBtn.dataset.add); return; }
   const incBtn = e.target.closest("[data-inc]"); if(incBtn){ cart[incBtn.dataset.inc]++; renderCart(); return; }
   const decBtn = e.target.closest("[data-dec]"); if(decBtn){ const k = decBtn.dataset.dec; cart[k] = Math.max(0, cart[k]-1); if(!cart[k]) delete cart[k]; renderCart(); return; }
@@ -540,6 +582,27 @@ $("openMap").addEventListener("click", () => {
   const q = "ليبيا، " + f.get("city") + "، " + (f.get("addr") || "");
   window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q), "_blank", "noopener");
 });
+
+function buildWhatsAppLink(order){
+  const itemsLines = order.items.map(it => `- ${it.name} × ${it.qty} (${it.price * it.qty} د.ل)`).join("\n");
+  const payText = order.payment === "bank" ? "تحويل مصرفي (مصرف الوحدة)" : "كاش عند الاستلام";
+  const mapLine = order.customer.mapUrl ? `\nرابط الخريطة: ${order.customer.mapUrl}` : "";
+  const message = [
+    `مرحباً متجر Sillia، أرغب بتأكيد طلبي:`,
+    `رقم الطلب: ${order.ref}`,
+    `الاسم: ${order.customer.name}`,
+    `الهاتف: ${order.customer.phone}`,
+    `المدينة: ${order.customer.city}`,
+    `العنوان: ${order.customer.address}${mapLine}`,
+    `طريقة الدفع: ${payText}`,
+    ``,
+    `تفاصيل الطلب:`,
+    itemsLines,
+    ``,
+    `الإجمالي: ${order.total} د.ل`
+  ].join("\n");
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
 
 $("orderForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -589,14 +652,28 @@ $("orderForm").addEventListener("submit", async e => {
 
   try {
     await addDoc(collection(db, "orders"), orderDoc);
+    const waUrl = buildWhatsAppLink(orderDoc);
+    const bankSummaryHtml = payVal === "bank" ? `
+      <div class="done-bank">
+        <div><b>بيانات التحويل (${esc(BANK_INFO.bankName)}):</b></div>
+        <div class="bank-row">
+          <span>رقم الحساب: <b class="bank-val">${esc(BANK_INFO.accountNumber)}</b></span>
+          <button type="button" class="copy-mini" data-copy="${esc(BANK_INFO.accountNumber)}">نسخ</button>
+        </div>
+        <div class="bank-row">
+          <span>IBAN: <b class="bank-val">${esc(BANK_INFO.iban)}</b></span>
+          <button type="button" class="copy-mini" data-copy="${esc(BANK_INFO.iban)}">نسخ</button>
+        </div>
+      </div>` : "";
 
     $("doneBox").innerHTML = `
       <div class="ok"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
       <div>
         <b class="done-title">شكراً لطلبك</b>
-        <p class="done-p">تم استلام طلبك، وسنتواصل معك لتأكيد التوصيل.</p>
+        <p class="done-p">تم استلام طلبك بنجاح. يمكنك متابعته أو إرسال إيصال التحويل عبر واتساب الأعمال.</p>
       </div>
       <div class="refbox"><small>رقم الطلب المرجعي</small><b>${esc(ref)}</b></div>
+      ${bankSummaryHtml}
       <div class="done-list">
         <div>عدد القطع: <b>${esc(count)}</b></div>
         <div>المجموع: <b>${esc(total)} د.ل</b></div>
@@ -604,11 +681,15 @@ $("orderForm").addEventListener("submit", async e => {
         <div>طريقة الدفع: <b>${esc(payLabel)}</b></div>
         <div>رقم التواصل: <b>${esc(phone)}</b></div>
       </div>
-      <button class="btn-full" id="doneClose">العودة للتسوق</button>`;
+      <a class="btn-full btn-wa" href="${esc(waUrl)}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.5 7.5L3 20.5l1.5-5.3A8.5 8.5 0 1 1 21 11.5z"/></svg>
+        إرسال تفاصيل الطلب عبر واتساب الأعمال
+      </a>
+      <button class="btn-ghost-full" id="doneClose">العودة للتسوق</button>`;
     e.target.hidden = true;
     $("doneBox").hidden = false;
     $("doneClose").addEventListener("click", () => {
-      $("doneBox").hidden = true; e.target.hidden = false; e.target.reset(); closeAll();
+      $("doneBox").hidden = true; e.target.hidden = false; e.target.reset(); $("bankBox").classList.remove("on"); closeAll();
     });
     Object.keys(cart).forEach(k => delete cart[k]);
     renderCart();
@@ -640,6 +721,9 @@ renderCart();
 function openProduct(name){
   const i = items.find(x => x.name === name); if(!i) return;
   const n = String(i.notes || "").split("·").map(t => t.trim());
+  const topVal = i.topNote || n[0] || "—";
+  const heartVal = i.heartNote || n[1] || "—";
+  const baseVal = i.baseNote || n[2] || "—";
   const tone = i.tone || "#b08a4f";
   $("prodBody").innerHTML = `
     <div class="pd-art" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${renderArtwork(i,"p")}</div>
@@ -647,9 +731,9 @@ function openProduct(name){
     <h2 class="pd-name">${esc(i.name)}</h2>
     <div class="pd-meta">${esc(i.size)} · ${esc(i.price)} د.ل</div>
     <div class="pd-ladder">
-      <div><span>أعلى</span><b>${esc(n[0] || "—")}</b></div>
-      <div><span>قلب</span><b>${esc(n[1] || "—")}</b></div>
-      <div><span>قاعدة</span><b>${esc(n[2] || "—")}</b></div>
+      <div><span>أعلى</span><b>${esc(topVal)}</b></div>
+      <div><span>قلب</span><b>${esc(heartVal)}</b></div>
+      <div><span>قاعدة</span><b>${esc(baseVal)}</b></div>
     </div>
     <button class="btn-full" id="pdAdd">أضف إلى السلة</button>`;
   $("pdAdd").addEventListener("click", () => { addToCart(i.name); closeAll(); });
