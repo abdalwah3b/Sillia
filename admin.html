@@ -139,7 +139,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;bor
     <div id="tab-orders">
       <div class="section-head">
         <div>
-          <h2>إدارة الطلبات</h2>
+          <h2>إدارة الطلبات <span class="pill" id="ordersCountBadge">0</span></h2>
           <p class="sub">متابعة الطلبات الواردة وتحديث حالتها وإيرادات المتجر</p>
         </div>
       </div>
@@ -160,10 +160,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;bor
       </div>
 
       <div class="toolbar">
-        <input type="search" id="orderSearch" placeholder="ابحث برقم الطلب، اسم العميل، الهاتف، أو المدينة...">
-        <select id="orderCityFilter">
-          <option value="">كل المدن</option>
-        </select>
+        <input type="search" id="orderSearch" placeholder="ابحث برقم الطلب أو رقم الهاتف...">
       </div>
 
       <div id="ordersList"><p class="muted">جاري تحميل الطلبات...</p></div>
@@ -173,7 +170,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:28px 22px;bor
     <div id="tab-perfumes" class="hidden">
       <div class="section-head">
         <div>
-          <h2>إدارة العطور</h2>
+          <h2>إدارة العطور <span class="pill" id="perfumesCountBadge">0</span></h2>
           <p class="sub">إضافة وتعديل وتصفية عطور النيش والديزاينر والبدائل والبخور</p>
         </div>
         <button class="btn" type="button" id="toggleAddFormBtn">+ إضافة عطر جديد</button>
@@ -499,31 +496,36 @@ function updateOrderStats(){
   $("stRevenue").textContent = revenue + " د.ل";
 }
 
-function populateCityFilter(){
-  const sel = $("orderCityFilter");
-  const currentVal = sel.value;
-  const cities = [...new Set(allOrders.map(o => o.customer?.city).filter(Boolean))].sort();
-  sel.innerHTML = '<option value="">كل المدن</option>' + cities.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
-  if(cities.includes(currentVal)) sel.value = currentVal;
+function formatOrderCopyText(o){
+  const lines = [
+    `طلب Sillia: ${o.ref || o.id}`,
+    `العميل: ${o.customer?.name || "—"}`,
+    `الهاتف: ${o.customer?.phone || "—"}`,
+    `المدينة: ${o.customer?.city || "—"}`,
+    `العنوان: ${o.customer?.address || "—"}`
+  ];
+  if(o.customer?.mapUrl) lines.push(`الخريطة: ${o.customer.mapUrl}`);
+  lines.push(`الدفع: ${o.payment === "bank" ? "تحويل مصرفي" : "كاش عند الاستلام"}`);
+  lines.push(`الأصناف:`);
+  (o.items || []).forEach(i => lines.push(`- ${i.name} × ${i.qty} (${i.price * i.qty} د.ل)`));
+  lines.push(`المجموع: ${o.total} د.ل`);
+  return lines.join("\n");
 }
 
 function renderOrders(){
   const q = ($("orderSearch").value || "").trim().toLowerCase();
-  const city = $("orderCityFilter").value;
 
   const filtered = allOrders.filter(o => {
     const st = o.status || "new";
     if(activeOrderStatus !== "all" && st !== activeOrderStatus) return false;
-    if(city && o.customer?.city !== city) return false;
     if(q){
-      const hay = [
-        o.ref, o.id,
-        o.customer?.name, o.customer?.phone, o.customer?.city, o.customer?.address
-      ].join(" ").toLowerCase();
+      const hay = [o.ref, o.id, o.customer?.phone].join(" ").toLowerCase();
       if(!hay.includes(q)) return false;
     }
     return true;
   });
+
+  $("ordersCountBadge").textContent = filtered.length;
 
   $("ordersList").innerHTML = filtered.length ? filtered.map(o => {
     const st = o.status || "new";
@@ -549,6 +551,7 @@ function renderOrders(){
       <div class="row">
         <b>المجموع: ${esc(o.total)} د.ل · ${o.payment === "bank" ? "تحويل مصرفي" : "كاش عند الاستلام"}</b>
         <div class="order-actions">
+          <button class="ghost" type="button" data-copy-order="${esc(o.id)}">نسخ الطلب</button>
           <select data-order="${esc(o.id)}" aria-label="حالة الطلب">${opts}</select>
           <button class="ghost danger" data-del-order="${esc(o.id)}">حذف</button>
         </div>
@@ -571,6 +574,8 @@ function renderPerfumes(){
     }
     return true;
   });
+
+  $("perfumesCountBadge").textContent = filtered.length;
 
   $("perfumeList").innerHTML = filtered.length ? filtered.map(p => {
     const tone = p.tone || "#b08a4f";
@@ -605,7 +610,6 @@ function startListeners(){
   onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), snap => {
     allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     updateOrderStats();
-    populateCityFilter();
     renderOrders();
   }, err => {
     console.error(err);
@@ -630,7 +634,6 @@ $("orderStatusFilters").addEventListener("click", e => {
   renderOrders();
 });
 $("orderSearch").addEventListener("input", renderOrders);
-$("orderCityFilter").addEventListener("change", renderOrders);
 
 $("ordersList").addEventListener("change", async e => {
   const id = e.target.dataset.order;
@@ -645,6 +648,16 @@ $("ordersList").addEventListener("change", async e => {
 });
 
 $("ordersList").addEventListener("click", async e => {
+  const copyId = e.target.dataset.copyOrder;
+  if(copyId){
+    const o = allOrders.find(x => x.id === copyId);
+    if(!o) return;
+    const text = formatOrderCopyText(o);
+    try { await navigator.clipboard.writeText(text); } catch(_){}
+    showToast("تم نسخ بيانات الطلب");
+    return;
+  }
+
   const delId = e.target.dataset.delOrder;
   if(!delId) return;
   if(confirm("هل تريد حذف هذا الطلب نهائياً؟")){
