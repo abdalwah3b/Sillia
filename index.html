@@ -383,6 +383,8 @@ const BANK_INFO = {
 const TELEGRAM_BOT_TOKEN = "9278431244:AAFNj-uaikkqpScX1v_7MMhLR76JCr-P0dg";
 const TELEGRAM_CHAT_ID = "1899607232";
 const CART_STORAGE_KEY = "sillia_cart_v1";
+const TAB_STORAGE_KEY = "sillia_store_active_tab";
+const CAT_STORAGE_KEY = "sillia_store_active_cat";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -393,6 +395,7 @@ const categories = {
   alt:{label:"بدائل", title:"البدائل", desc:"عطور تشبه في نفحتها عطوراً مشهورة بسعر أقل. لا تحمل أسماء العلامات الأصلية، وهي خيار عملي لمن يحب النفحة ولا يريد دفع السعر الكامل."},
   bakhoor:{label:"بخور", title:"البخور", desc:"مواد عطرية طبيعية تُحرق على الفحم لتعطير المكان والملابس، بدلاً من الرش على الجلد. تُستعمل في البيوت والمجالس، وتترك أثراً دافئاً يبقى لساعات."}
 };
+const VALID_TABS = new Set(["home", "collection", "about"]);
 
 function formatGender(val){
   const raw = String(val || "").trim().toLowerCase();
@@ -402,8 +405,44 @@ function formatGender(val){
   return "";
 }
 
+function getSavedTab(){
+  try {
+    const hashMatch = (location.hash || "").match(/^#tab=([a-z]+)$/i);
+    if(hashMatch && VALID_TABS.has(hashMatch[1].toLowerCase())){
+      return hashMatch[1].toLowerCase();
+    }
+    const stored = localStorage.getItem(TAB_STORAGE_KEY);
+    if(stored && VALID_TABS.has(stored)) return stored;
+  } catch(_){}
+  return "home";
+}
+
+function persistTab(t){
+  if(!VALID_TABS.has(t)) return;
+  try { localStorage.setItem(TAB_STORAGE_KEY, t); } catch(_){}
+  try {
+    const targetHash = `#tab=${t}`;
+    if(location.hash !== targetHash){
+      history.replaceState(null, "", targetHash);
+    }
+  } catch(_){}
+}
+
+function getSavedCat(){
+  try {
+    const stored = localStorage.getItem(CAT_STORAGE_KEY);
+    if(stored && Object.prototype.hasOwnProperty.call(categories, stored)) return stored;
+  } catch(_){}
+  return "niche";
+}
+
+function persistCat(c){
+  if(!Object.prototype.hasOwnProperty.call(categories, c)) return;
+  try { localStorage.setItem(CAT_STORAGE_KEY, c); } catch(_){}
+}
+
 let items = [];
-let activeCat = "niche";
+let activeCat = getSavedCat();
 let currentOpenedPerfume = null;
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -540,7 +579,9 @@ $("tabs").addEventListener("click", e => {
     const dayEl = $("day"), infoEl = $("catinfo");
     dayEl.classList.add('out'); infoEl.classList.add('out');
     setTimeout(() => {
-      activeCat = btn.dataset.c; renderTabs(); renderCat();
+      activeCat = btn.dataset.c;
+      persistCat(activeCat);
+      renderTabs(); renderCat();
       requestAnimationFrame(() => requestAnimationFrame(() => {
         dayEl.classList.remove('out'); infoEl.classList.remove('out');
       }));
@@ -593,7 +634,7 @@ onSnapshot(query(collection(db, "perfumes")), snap => {
   console.warn("تعذر قراءة عطور Firestore:", err);
 });
 
-let currentTab = "home", busy = false;
+let currentTab = getSavedTab(), busy = false;
 document.querySelectorAll('[data-tab]').forEach(el => el.classList.add('fx'));
 $("day").classList.add('fxd');
 $("catinfo").classList.add('fxd');
@@ -601,12 +642,23 @@ $("catinfo").classList.add('fxd');
 function setTabButtons(t){
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.t === t));
 }
+function applyTabImmediate(t){
+  const safeTab = VALID_TABS.has(t) ? t : "home";
+  currentTab = safeTab;
+  setTabButtons(safeTab);
+  document.querySelectorAll('[data-tab]').forEach(el => {
+    el.classList.remove('out');
+    el.classList.toggle('hidden', el.dataset.tab !== safeTab);
+  });
+}
 function showTab(t){
-  if(busy || t === currentTab) return;
+  const safeTab = VALID_TABS.has(t) ? t : "home";
+  if(busy || safeTab === currentTab) return;
   busy = true;
+  persistTab(safeTab);
   const outgoing = document.querySelectorAll(`[data-tab="${currentTab}"]`);
-  const incoming = document.querySelectorAll(`[data-tab="${t}"]`);
-  setTabButtons(t);
+  const incoming = document.querySelectorAll(`[data-tab="${safeTab}"]`);
+  setTabButtons(safeTab);
   outgoing.forEach(el => el.classList.add('out'));
   setTimeout(() => {
     outgoing.forEach(el => { el.classList.add('hidden'); el.classList.remove('out'); });
@@ -615,7 +667,7 @@ function showTab(t){
     requestAnimationFrame(() => requestAnimationFrame(() => {
       incoming.forEach(el => el.classList.remove('out'));
     }));
-    currentTab = t;
+    currentTab = safeTab;
     setTimeout(() => { busy = false; }, 560);
   }, 400);
 }
@@ -626,9 +678,11 @@ document.querySelector('.tabbar').addEventListener('click', e => {
 document.querySelectorAll('[data-go]').forEach(a => a.addEventListener('click', e => {
   e.preventDefault(); showTab(a.dataset.go);
 }));
-document.querySelectorAll('[data-tab]').forEach(el => {
-  if(el.dataset.tab !== currentTab) el.classList.add('hidden');
+window.addEventListener('hashchange', () => {
+  const nextTab = getSavedTab();
+  if(!busy && nextTab !== currentTab) applyTabImmediate(nextTab);
 });
+applyTabImmediate(currentTab);
 
 const cities = ["طرابلس","بنغازي","مصراتة","سبها","البيضاء","الزاوية","زليتن","سرت","طبرق","الخمس","غريان","درنة","أجدابيا","ترهونة","صبراتة","زوارة","يفرن"];
 $("citySel").innerHTML = '<option value="">اختر المدينة</option>' + cities.map(c => `<option>${esc(c)}</option>`).join("");
