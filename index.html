@@ -43,7 +43,7 @@ nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
 .tab.on::after{content:"";position:absolute;right:14px;left:14px;bottom:0;height:2px;background:var(--gold)}
 [data-tab].hidden{display:none}
 
-.tabbar, .tab, .filters, .filters button, .hact, .hact button, .float-cart, .add, .btn {
+.tabbar, .tab, .filters, .filters button, .hact, .hact button, .float-cart, .add, .btn, .card {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -170,7 +170,7 @@ nav{display:flex;gap:18px;font-size:15px;color:var(--muted)}
 .done .ok{width:68px;height:68px;border-radius:50%;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--deep)}
 .done-title{font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:24px;font-weight:500;display:block}
 .done-p{color:var(--muted);font-size:14px;margin:4px 0 0}
-.refbox{background:var(--sand);border-radius:14px;padding:12px 16px;width:100%}
+.refbox{background:var(--sand);border-radius:14px;padding:12px 16px;width:100%;display:flex;flex-direction:column;align-items:center;gap:6px}
 .refbox small{color:var(--muted);font-size:12px}
 .refbox b{display:block;font-family:"Bodoni Moda",Didot,serif;font-size:20px;letter-spacing:2px;color:var(--deep);margin-top:2px}
 .done-list{width:100%;text-align:right;font-size:14px;color:var(--muted);line-height:1.95}
@@ -382,6 +382,7 @@ const BANK_INFO = {
 
 const TELEGRAM_BOT_TOKEN = "9278431244:AAFNj-uaikkqpScX1v_7MMhLR76JCr-P0dg";
 const TELEGRAM_CHAT_ID = "1899607232";
+const CART_STORAGE_KEY = "sillia_cart_v1";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -410,6 +411,46 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 function findItemByKey(key){
   if(!key) return null;
   return items.find(x => String(x.id) === String(key)) || items.find(x => x.name === key) || null;
+}
+
+function loadSavedCart(){
+  try {
+    const raw = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "{}");
+    if(!raw || typeof raw !== "object") return {};
+    const cleaned = {};
+    Object.keys(raw).forEach(k => {
+      const q = Math.floor(Number(raw[k]) || 0);
+      if(q > 0) cleaned[String(k)] = q;
+    });
+    return cleaned;
+  } catch(e){
+    return {};
+  }
+}
+
+function saveCartToStorage(){
+  try {
+    const cleaned = {};
+    Object.keys(cart).forEach(k => {
+      const q = Math.floor(Number(cart[k]) || 0);
+      if(q > 0) cleaned[String(k)] = q;
+    });
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cleaned));
+  } catch(e){}
+}
+
+function pruneUnavailableCartItems(){
+  if(!items.length) return false;
+  let changed = false;
+  Object.keys(cart).forEach(k => {
+    const found = findItemByKey(k);
+    if(!found || found.inStock === false){
+      delete cart[k];
+      changed = true;
+    }
+  });
+  if(changed) saveCartToStorage();
+  return changed;
 }
 
 function bottle(c,k){
@@ -534,6 +575,7 @@ onSnapshot(query(collection(db, "perfumes")), snap => {
       inStock: data.inStock !== false
     };
   });
+  pruneUnavailableCartItems();
   renderCat();
   renderFeatured();
   renderCart();
@@ -591,7 +633,20 @@ document.querySelectorAll('[data-tab]').forEach(el => {
 const cities = ["طرابلس","بنغازي","مصراتة","سبها","البيضاء","الزاوية","زليتن","سرت","طبرق","الخمس","غريان","درنة","أجدابيا","ترهونة","صبراتة","زوارة","يفرن"];
 $("citySel").innerHTML = '<option value="">اختر المدينة</option>' + cities.map(c => `<option>${esc(c)}</option>`).join("");
 
-const cart = {};
+function prefillSavedCustomer(){
+  try {
+    const saved = JSON.parse(localStorage.getItem("sillia_last_customer") || "null");
+    if(!saved) return;
+    const form = $("orderForm");
+    if(saved.name && !form.elements.name.value) form.elements.name.value = saved.name;
+    if(saved.phone && !form.elements.phone.value) form.elements.phone.value = saved.phone;
+    if(saved.city && !form.elements.city.value && cities.includes(saved.city)) form.elements.city.value = saved.city;
+    if(saved.address && !form.elements.addr.value) form.elements.addr.value = saved.address;
+  } catch(e){}
+}
+prefillSavedCustomer();
+
+const cart = loadSavedCart();
 const priceOf = key => findItemByKey(key)?.price || 0;
 function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
 function cartTotal(){ return Object.keys(cart).reduce((t,k)=> t + priceOf(k)*cart[k], 0); }
@@ -637,6 +692,7 @@ function addToCart(key){
   const it = findItemByKey(key);
   const resolvedKey = String(it?.id || key);
   cart[resolvedKey] = (cart[resolvedKey] || 0) + 1;
+  saveCartToStorage();
   renderCart();
 }
 
@@ -652,9 +708,9 @@ document.addEventListener("click", e => {
     return;
   }
   const addBtn = e.target.closest("[data-add]"); if(addBtn){ addToCart(addBtn.dataset.add); return; }
-  const incBtn = e.target.closest("[data-inc]"); if(incBtn){ const k = incBtn.dataset.inc; cart[k] = (cart[k]||0) + 1; renderCart(); return; }
-  const decBtn = e.target.closest("[data-dec]"); if(decBtn){ const k = decBtn.dataset.dec; cart[k] = Math.max(0, (cart[k]||0)-1); if(!cart[k]) delete cart[k]; renderCart(); return; }
-  const rmBtn = e.target.closest("[data-rm]"); if(rmBtn){ delete cart[rmBtn.dataset.rm]; renderCart(); return; }
+  const incBtn = e.target.closest("[data-inc]"); if(incBtn){ const k = incBtn.dataset.inc; cart[k] = (cart[k]||0) + 1; saveCartToStorage(); renderCart(); return; }
+  const decBtn = e.target.closest("[data-dec]"); if(decBtn){ const k = decBtn.dataset.dec; cart[k] = Math.max(0, (cart[k]||0)-1); if(!cart[k]) delete cart[k]; saveCartToStorage(); renderCart(); return; }
+  const rmBtn = e.target.closest("[data-rm]"); if(rmBtn){ delete cart[rmBtn.dataset.rm]; saveCartToStorage(); renderCart(); return; }
 });
 
 function openSheet(id){ $("ov").classList.add("on"); $(id).classList.add("on"); }
@@ -671,6 +727,9 @@ function closeAll(){
 }
 $("ov").addEventListener("click", closeAll);
 document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", closeAll));
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape") closeAll();
+});
 $("cartBtn").addEventListener("click", () => { renderCart(); openSheet("cartSheet"); });
 $("floatingCartBtn").addEventListener("click", () => { renderCart(); openSheet("cartSheet"); });
 
@@ -696,6 +755,7 @@ $("toCheckout").addEventListener("click", () => {
   if(!cartCount()){ return; }
   $("orderErr").textContent = "";
   $("sumBox").textContent = "المجموع: " + cartTotal() + " د.ل";
+  prefillSavedCustomer();
   closeAll(); openSheet("checkSheet");
 });
 
@@ -753,7 +813,7 @@ async function notifyTelegramNewOrder(order, payLabel){
 
   const endpoint = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
   try {
-    await fetch(endpoint, {
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -762,6 +822,7 @@ async function notifyTelegramNewOrder(order, payLabel){
         parse_mode: "Markdown"
       })
     });
+    if(!res.ok) console.warn("استجابة Telegram غير ناجحة:", res.status);
   } catch (err) {
     console.warn("تعذر إرسال إشعار Telegram:", err);
   }
@@ -796,6 +857,8 @@ $("orderForm").addEventListener("submit", async e => {
   const total = cartTotal(), count = cartCount();
   const city = f.get("city");
   const phone = f.get("phone").trim();
+  const nameVal = f.get("name").trim();
+  const addrVal = f.get("addr").trim();
 
   const orderDoc = {
     ref,
@@ -805,10 +868,10 @@ $("orderForm").addEventListener("submit", async e => {
     count,
     items: orderItems,
     customer: {
-      name: f.get("name").trim(),
+      name: nameVal,
       phone,
       city,
-      address: f.get("addr").trim(),
+      address: addrVal,
       mapUrl: (f.get("map") || "").trim()
     },
     createdAt: serverTimestamp()
@@ -816,6 +879,9 @@ $("orderForm").addEventListener("submit", async e => {
 
   try {
     await addDoc(collection(db, "orders"), orderDoc);
+    try {
+      localStorage.setItem("sillia_last_customer", JSON.stringify({ name: nameVal, phone, city, address: addrVal }));
+    } catch(_){}
     await notifyTelegramNewOrder(orderDoc, payLabel);
     const waUrl = buildWhatsAppLink(orderDoc);
     const bankSummaryHtml = payVal === "bank" ? `
@@ -837,7 +903,11 @@ $("orderForm").addEventListener("submit", async e => {
         <b class="done-title">شكراً لطلبك</b>
         <p class="done-p">تم استلام طلبك بنجاح. يمكنك متابعته أو إرسال إيصال التحويل عبر واتساب الأعمال.</p>
       </div>
-      <div class="refbox"><small>رقم الطلب المرجعي</small><b>${esc(ref)}</b></div>
+      <div class="refbox">
+        <small>رقم الطلب المرجعي</small>
+        <b>${esc(ref)}</b>
+        <button type="button" class="copy-mini" data-copy="${esc(ref)}">نسخ رقم الطلب</button>
+      </div>
       ${bankSummaryHtml}
       <div class="done-list">
         <div>عدد القطع: <b>${esc(count)}</b></div>
@@ -854,9 +924,10 @@ $("orderForm").addEventListener("submit", async e => {
     e.target.hidden = true;
     $("doneBox").hidden = false;
     $("doneClose").addEventListener("click", () => {
-      $("doneBox").hidden = true; e.target.hidden = false; e.target.reset(); $("bankBox").classList.remove("on"); closeAll();
+      $("doneBox").hidden = true; e.target.hidden = false; e.target.reset(); $("bankBox").classList.remove("on"); prefillSavedCustomer(); closeAll();
     });
     Object.keys(cart).forEach(k => delete cart[k]);
+    saveCartToStorage();
     renderCart();
   } catch(err){
     console.error(err);
