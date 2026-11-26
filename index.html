@@ -374,6 +374,11 @@ let activeCat = "niche";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
+function findItemByKey(key){
+  if(!key) return null;
+  return items.find(x => String(x.id) === String(key)) || items.find(x => x.name === key) || null;
+}
+
 function bottle(c,k){
   const safeTone = /^#[0-9a-fA-F]{3,8}$/.test(c || "") ? c : "#b08a4f";
   const id = "bt" + k;
@@ -426,12 +431,12 @@ function renderCat(){
   const list = items.filter(i => i.cat === activeCat && i.inStock !== false);
   $("day").innerHTML = list.length ? list.map((i,k) => {
     const tone = i.tone || "#b08a4f";
-    return `<article class="card">
+    return `<article class="card" data-pid="${esc(i.id)}">
       <div class="sq" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${renderArtwork(i,k)}</div>
       <div class="ln"><b>${esc(i.name)}</b></div>
       ${cardMetaHtml(i)}
       <small>${esc(i.notes)}</small>
-      <button class="add addbtn" data-add="${esc(i.name)}">أضف للسلة</button>
+      <button class="add addbtn" data-add="${esc(i.id)}">أضف للسلة</button>
     </article>`;
   }).join("") : '<div class="note" style="grid-column:1/-1">لا توجد عطور متوفرة حالياً في هذا القسم.</div>';
 }
@@ -441,12 +446,12 @@ function renderFeatured(){
   const chosen = available.slice(0, 3);
   $("fday").innerHTML = chosen.length ? chosen.map((i,k) => {
     const tone = i.tone || "#b08a4f";
-    return `<article class="card">
+    return `<article class="card" data-pid="${esc(i.id)}">
       <div class="sq" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${renderArtwork(i,"f"+k)}</div>
       <div class="ln"><b>${esc(i.name)}</b></div>
       ${cardMetaHtml(i)}
       <small>${esc(i.notes)}</small>
-      <button class="add addbtn" data-add="${esc(i.name)}">أضف للسلة</button>
+      <button class="add addbtn" data-add="${esc(i.id)}">أضف للسلة</button>
     </article>`;
   }).join("") : '<div class="note" style="grid-column:1/-1">سيتم عرض العطور المختارة فور إضافتها من لوحة الإدارة.</div>';
 }
@@ -539,26 +544,27 @@ const cities = ["طرابلس","بنغازي","مصراتة","سبها","الب�
 $("citySel").innerHTML = '<option value="">اختر المدينة</option>' + cities.map(c => `<option>${esc(c)}</option>`).join("");
 
 const cart = {};
-const priceOf = n => (items.find(i => i.name === n)?.price) || 0;
+const priceOf = key => findItemByKey(key)?.price || 0;
 function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
-function cartTotal(){ return Object.keys(cart).reduce((t,n)=> t + priceOf(n)*cart[n], 0); }
+function cartTotal(){ return Object.keys(cart).reduce((t,k)=> t + priceOf(k)*cart[k], 0); }
 
 function renderCart(){
-  const names = Object.keys(cart).filter(n => cart[n] > 0);
+  const keys = Object.keys(cart).filter(k => cart[k] > 0);
   const bagIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>';
-  $("cartList").innerHTML = names.length ? names.map((n,k) => {
-    const it = items.find(x => x.name === n) || { name: n, price: priceOf(n), tone: "#b08a4f" };
+  $("cartList").innerHTML = keys.length ? keys.map((key,k) => {
+    const it = findItemByKey(key) || { id: key, name: key, price: priceOf(key), tone: "#b08a4f" };
     const tone = it.tone || "#b08a4f";
+    const itemKey = String(it.id || key);
     return `<div class="ci">
       <div class="ci-thumb" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${renderArtwork(it,"c"+k)}</div>
       <div class="ci-info">
-        <b>${esc(n)}</b>
+        <b>${esc(it.name || key)}</b>
         <small>${esc(it.price)} د.ل للقطعة</small>
-        <div class="qty"><button data-dec="${esc(n)}">−</button><span>${esc(cart[n])}</span><button data-inc="${esc(n)}">+</button></div>
+        <div class="qty"><button data-dec="${esc(itemKey)}">−</button><span>${esc(cart[key])}</span><button data-inc="${esc(itemKey)}">+</button></div>
       </div>
       <div class="ci-end">
-        <span class="ci-sub">${esc(it.price * cart[n])} د.ل</span>
-        <button class="rm" data-rm="${esc(n)}" title="حذف">×</button>
+        <span class="ci-sub">${esc(it.price * cart[key])} د.ل</span>
+        <button class="rm" data-rm="${esc(itemKey)}" title="حذف">×</button>
       </div>
     </div>`;
   }).join("") : `<div class="empty-cart">${bagIcon}<p>سلتك فارغة</p><small>أضف عطرك المفضل ليظهر هنا</small></div>`;
@@ -566,7 +572,13 @@ function renderCart(){
   $("cartBadge").textContent = cartCount();
 }
 
-function addToCart(n){ cart[n] = (cart[n]||0) + 1; renderCart(); }
+function addToCart(key){
+  const it = findItemByKey(key);
+  const resolvedKey = String(it?.id || key);
+  cart[resolvedKey] = (cart[resolvedKey] || 0) + 1;
+  renderCart();
+}
+
 document.addEventListener("click", e => {
   const copyBtn = e.target.closest("[data-copy]");
   if(copyBtn){
@@ -579,8 +591,8 @@ document.addEventListener("click", e => {
     return;
   }
   const addBtn = e.target.closest("[data-add]"); if(addBtn){ addToCart(addBtn.dataset.add); return; }
-  const incBtn = e.target.closest("[data-inc]"); if(incBtn){ cart[incBtn.dataset.inc]++; renderCart(); return; }
-  const decBtn = e.target.closest("[data-dec]"); if(decBtn){ const k = decBtn.dataset.dec; cart[k] = Math.max(0, cart[k]-1); if(!cart[k]) delete cart[k]; renderCart(); return; }
+  const incBtn = e.target.closest("[data-inc]"); if(incBtn){ const k = incBtn.dataset.inc; cart[k] = (cart[k]||0) + 1; renderCart(); return; }
+  const decBtn = e.target.closest("[data-dec]"); if(decBtn){ const k = decBtn.dataset.dec; cart[k] = Math.max(0, (cart[k]||0)-1); if(!cart[k]) delete cart[k]; renderCart(); return; }
   const rmBtn = e.target.closest("[data-rm]"); if(rmBtn){ delete cart[rmBtn.dataset.rm]; renderCart(); return; }
 });
 
@@ -667,11 +679,12 @@ async function notifyTelegramNewOrder(order, payLabel){
 $("orderForm").addEventListener("submit", async e => {
   e.preventDefault();
   $("orderErr").textContent = "";
-  const orderItems = Object.keys(cart).filter(n => cart[n] > 0).map(n => {
-    const it = items.find(x => x.name === n) || {};
+  const orderItems = Object.keys(cart).filter(k => cart[k] > 0).map(k => {
+    const it = findItemByKey(k) || {};
     return {
-      name: n,
-      qty: cart[n],
+      productId: it.id || k,
+      name: it.name || k,
+      qty: cart[k],
       price: Number(it.price) || 0,
       size: it.size || ""
     };
@@ -779,8 +792,8 @@ $("themeBtn").addEventListener("click", () => {
 
 renderCart();
 
-function openProduct(name){
-  const i = items.find(x => x.name === name); if(!i) return;
+function openProduct(key){
+  const i = findItemByKey(key); if(!i) return;
   const n = String(i.notes || "").split("·").map(t => t.trim());
   const topVal = i.topNote || n[0] || "—";
   const heartVal = i.heartNote || n[1] || "—";
@@ -799,13 +812,18 @@ function openProduct(name){
       <div><span>قاعدة</span><b>${esc(baseVal)}</b></div>
     </div>
     <button class="btn-full" id="pdAdd">أضف إلى السلة</button>`;
-  $("pdAdd").addEventListener("click", () => { addToCart(i.name); closeAll(); });
+  $("pdAdd").addEventListener("click", () => { addToCart(i.id || i.name); closeAll(); });
   openSheet("prodSheet");
 }
 document.addEventListener("click", e => {
   if(e.target.closest("[data-add]") || e.target.closest("[data-inc],[data-dec],[data-rm]")) return;
   const card = e.target.closest(".card");
-  if(card){ const b = card.querySelector(".ln b"); if(b) openProduct(b.textContent); }
+  if(card){
+    const pid = card.dataset.pid;
+    if(pid){ openProduct(pid); return; }
+    const b = card.querySelector(".ln b");
+    if(b) openProduct(b.textContent);
+  }
 });
 </script>
 </body>
