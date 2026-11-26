@@ -321,21 +321,7 @@ const categories = {
   bakhoor:{label:"بخور", title:"البخور", desc:"مواد عطرية طبيعية تُحرق على الفحم لتعطير المكان والملابس، بدلاً من الرش على الجلد. تُستعمل في البيوت والمجالس، وتترك أثراً دافئاً يبقى لساعات."}
 };
 
-const fallbackItems = [
-  {cat:"niche", house:"دار تجريبية أ", name:"Nuit Sable", size:"100 مل", price:260, tone:"#6e5a4a", notes:"عنبر رمادي · بخور · باتشولي", inStock:true},
-  {cat:"niche", house:"دار تجريبية ب", name:"Oud Lumière", size:"100 مل", price:310, tone:"#9c7a52", notes:"عود · زعفران · جلد", inStock:true},
-  {cat:"niche", house:"دار تجريبية ج", name:"Rose Pâle", size:"50 مل", price:200, tone:"#e4b8a8", notes:"ورد دمشقي · لوز · خوخ", inStock:true},
-  {cat:"designer", house:"دار تجريبية د", name:"Ambre Soie", size:"100 مل", price:240, tone:"#d6a46a", notes:"عنبر · فانيليا · توابل خفيفة", inStock:true},
-  {cat:"designer", house:"دار تجريبية هـ", name:"Aube Dorée", size:"50 مل", price:190, tone:"#e8c9a0", notes:"ليمون · زهر البرتقال · مسك أبيض", inStock:true},
-  {cat:"designer", house:"دار تجريبية و", name:"Cèdre Doux", size:"75 مل", price:210, tone:"#a8917a", notes:"أرز · فيتيفر · مسك", inStock:true},
-  {cat:"alt", house:"بديل", name:"Vert Matin", size:"75 مل", price:120, tone:"#b9c9a8", notes:"ورق التين · خضرة · صنوبر", inStock:true},
-  {cat:"alt", house:"بديل", name:"Velvet Oud", size:"100 مل", price:110, tone:"#b08a4f", notes:"عود · فانيليا · توابل", inStock:true},
-  {cat:"alt", house:"بديل", name:"Sable Musk", size:"50 مل", price:90, tone:"#d9c7ad", notes:"مسك · صندل · خشب ناعم", inStock:true},
-  {cat:"bakhoor", house:"بخور", name:"Bakhoor Sahara", size:"50 غرام", price:120, tone:"#7a5a3c", notes:"عود · لبان · ورد مجفف", inStock:true},
-  {cat:"bakhoor", house:"بخور", name:"Bakhoor Médina", size:"50 غرام", price:140, tone:"#8c6a4c", notes:"عنبر · صندل · مسك", inStock:true}
-];
-
-let items = [...fallbackItems];
+let items = [];
 let activeCat = "niche";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -389,10 +375,8 @@ function renderCat(){
 
 function renderFeatured(){
   const available = items.filter(i => i.inStock !== false);
-  const featuredNames = ["Nuit Sable","Ambre Soie","Bakhoor Sahara"];
-  let chosen = available.filter(i => featuredNames.includes(i.name));
-  if(!chosen.length) chosen = available.slice(0, 3);
-  $("fday").innerHTML = chosen.map((i,k) => {
+  const chosen = available.slice(0, 3);
+  $("fday").innerHTML = chosen.length ? chosen.map((i,k) => {
     const tone = i.tone || "#b08a4f";
     return `<article class="card">
       <div class="sq" style="background:linear-gradient(160deg,${esc(tone)}66,${esc(tone)}22)">${bottle(tone,"f"+k)}</div>
@@ -400,7 +384,7 @@ function renderFeatured(){
       <small>${esc(i.notes)}</small>
       <button class="add addbtn" data-add="${esc(i.name)}">أضف للسلة</button>
     </article>`;
-  }).join("");
+  }).join("") : '<div class="note" style="grid-column:1/-1">سيتم عرض العطور المختارة فور إضافتها من لوحة الإدارة.</div>';
 }
 
 $("tabs").addEventListener("click", e => {
@@ -421,29 +405,27 @@ renderTabs();
 renderCat();
 renderFeatured();
 
-// مزامنة العطور من Firestore إن وُجدت
+// مزامنة العطور مباشرة من مجموعة perfumes في Firestore
 onSnapshot(query(collection(db, "perfumes")), snap => {
-  if(!snap.empty){
-    items = snap.docs.map(d => {
-      const data = d.data();
-      return {
-        id: d.id,
-        cat: data.category || data.cat || "niche",
-        house: data.house || "Sillia",
-        name: data.name || "",
-        size: data.size || "100 مل",
-        price: Number(data.price) || 0,
-        tone: data.tone || "#b08a4f",
-        notes: data.notes || "",
-        inStock: data.inStock !== false
-      };
-    });
-    renderCat();
-    renderFeatured();
-    renderCart();
-  }
+  items = snap.docs.map(d => {
+    const data = d.data();
+    return {
+      id: d.id,
+      cat: data.category || data.cat || "niche",
+      house: data.house || "Sillia",
+      name: data.name || "",
+      size: data.size || "100 مل",
+      price: Number(data.price) || 0,
+      tone: data.tone || "#b08a4f",
+      notes: data.notes || "",
+      inStock: data.inStock !== false
+    };
+  });
+  renderCat();
+  renderFeatured();
+  renderCart();
 }, err => {
-  console.warn("تعذر قراءة عطور Firestore، يتم استخدام القائمة الافتراضية:", err);
+  console.warn("تعذر قراءة عطور Firestore:", err);
 });
 
 let currentTab = "home", busy = false;
